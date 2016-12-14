@@ -39,7 +39,8 @@ defmodule ExPusherLite.Mixfile do
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
      {:ex_admin, github: "smpallen99/ex_admin"},
-     {:coherence, "~> 0.3"}]
+     {:coherence, "~> 0.3"},
+     {:slugger, "~> 0.1.0"}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
