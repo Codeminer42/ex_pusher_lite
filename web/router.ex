@@ -54,7 +54,9 @@ defmodule ExPusherLite.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", ExPusherLite do
-  #   pipe_through :api
-  # end
+  scope "/api", ExPusherLite do
+    pipe_through :api
+
+    resources "/applications", ApplicationController, except: [:new, :edit]
+  end
 end

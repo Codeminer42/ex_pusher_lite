@@ -23,6 +23,8 @@ defmodule ExPusherLite.Web do
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
+
+      import ExPusherLite.ModelHelpers
     end
   end
 
