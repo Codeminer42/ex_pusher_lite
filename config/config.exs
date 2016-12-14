@@ -22,10 +22,6 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-# Import environment specific config. This must remain at the bottom
-# of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
-
 # %% Coherence Configuration %%   Don't remove this line
 config :coherence,
   user_schema: ExPusherLite.User,
@@ -40,3 +36,18 @@ config :coherence, ExPusherLite.Coherence.Mailer,
   adapter: Swoosh.Adapters.Sendgrid,
   api_key: "your api key here"
 # %% End Coherence Configuration %%
+
+config :ex_admin,
+  repo: ExPusherLite.Repo,
+  module: ExPusherLite,
+  modules: [
+    ExPusherLite.ExAdmin.Dashboard,
+    ExPusherLite.ExAdmin.User
+  ]
+
+config :xain, :after_callback, {Phoenix.HTML, :raw}
+
+
+# Import environment specific config. This must remain at the bottom
+# of this file so it overrides the configuration defined above.
+import_config "#{Mix.env}.exs"

@@ -1,6 +1,7 @@
 defmodule ExPusherLite.Router do
   use ExPusherLite.Web, :router
   use Coherence.Router
+  use ExAdmin.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -41,9 +42,15 @@ defmodule ExPusherLite.Router do
   end
 
   scope "/", ExPusherLite do
-    pipe_through :protected # Use the default browser stack
+    pipe_through :protected
 
     # get "/", PageController, :index
+  end
+
+  scope "/admin", ExAdmin do
+    pipe_through :protected
+
+    admin_routes
   end
 
   # Other scopes may use custom stacks.
