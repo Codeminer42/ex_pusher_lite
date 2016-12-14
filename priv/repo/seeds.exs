@@ -9,3 +9,11 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+alias ExPusherLite.{Repo, User}
+
+Repo.delete_all User
+
+User.changeset(%User{}, %{name: "Test Admin", email: "admin@example.com", password: "password", password_confirmation: "password"})
+|> Repo.insert!
+|> Coherence.ControllerHelpers.confirm!

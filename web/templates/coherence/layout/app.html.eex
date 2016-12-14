@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Hello ExPusherLite!</title>
+    <title>Hello Admin1!</title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
 
@@ -15,15 +15,6 @@
     <div class="container">
       <header class="header">
         <nav role="navigation">
-          <ul class="nav nav-pills pull-right">
-            <%= if Coherence.current_user(@conn) do %>
-              <%= if @conn.assigns[:remembered] do %>
-                <li style="color: red;">!!</li>
-              <% end %>
-            <% end %>
-            <%= ExPusherLite.Coherence.ViewHelpers.coherence_links(@conn, :layout) %>
-            <li><a href="http://www.phoenixframework.org/docs">Get Started</a></li>
-          </ul>
         </nav>
         <span class="logo"></span>
       </header>
