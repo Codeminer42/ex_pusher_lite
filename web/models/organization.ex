@@ -7,6 +7,9 @@ defmodule ExPusherLite.Organization do
     field :archived_at, Ecto.DateTime
 
     timestamps()
+
+    has_many :enrollments, ExPusherLite.Enrollment, on_delete: :delete_all, on_replace: :delete
+    has_many :users, through: [:enrollments, :user]
   end
 
   @required_fields [:name, :slug]

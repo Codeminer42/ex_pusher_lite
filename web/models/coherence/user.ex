@@ -8,6 +8,9 @@ defmodule ExPusherLite.User do
     coherence_schema
 
     timestamps
+
+    has_many :enrollments, ExPusherLite.Enrollment, on_delete: :delete_all, on_replace: :delete
+    has_many :organizations, through: [:enrollments, :organization]
   end
 
   def changeset(model, params \\ %{}) do
