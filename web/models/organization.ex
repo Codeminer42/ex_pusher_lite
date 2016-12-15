@@ -10,6 +10,9 @@ defmodule ExPusherLite.Organization do
 
     has_many :enrollments, ExPusherLite.Enrollment, on_delete: :delete_all, on_replace: :delete
     has_many :users, through: [:enrollments, :user]
+
+    has_many :ownerships, ExPusherLite.Ownership, on_delete: :delete_all, on_replace: :delete
+    has_many :applications, through: [:ownerships, :application]
   end
 
   @required_fields [:name, :slug]

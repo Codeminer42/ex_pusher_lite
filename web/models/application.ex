@@ -8,6 +8,9 @@ defmodule ExPusherLite.Application do
     field :archived_at, Ecto.DateTime
 
     timestamps()
+
+    has_many :ownerships, ExPusherLite.Ownership, on_delete: :delete_all, on_replace: :delete
+    has_many :organizations, through: [:ownerships, :organization]
   end
 
   @required_fields [:name, :app_key, :app_secret]
