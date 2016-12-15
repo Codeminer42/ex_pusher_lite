@@ -42,7 +42,11 @@ config :ex_admin,
   module: ExPusherLite,
   modules: [
     ExPusherLite.ExAdmin.Dashboard,
-    ExPusherLite.ExAdmin.User
+    ExPusherLite.ExAdmin.User,
+    ExPusherLite.ExAdmin.Application,
+    ExPusherLite.ExAdmin.Organization,
+    ExPusherLite.ExAdmin.Ownership,
+    ExPusherLite.ExAdmin.Enrollment,
   ]
 
 config :xain, :after_callback, {Phoenix.HTML, :raw}

@@ -25,6 +25,20 @@ defmodule ExPusherLite.Web do
       import Ecto.Query
 
       import ExPusherLite.ModelHelpers
+
+      alias ExPusherLite.Repo
+
+      def all do
+        Repo.all(__MODULE__)
+      end
+
+      def first do
+        Repo.one(from x in __MODULE__, order_by: [asc: x.id], limit: 1)
+      end
+
+      def last do
+        Repo.one(from x in __MODULE__, order_by: [desc: x.id], limit: 1)
+      end
     end
   end
 

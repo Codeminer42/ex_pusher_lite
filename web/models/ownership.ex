@@ -2,7 +2,7 @@ defmodule ExPusherLite.Ownership do
   use ExPusherLite.Web, :model
 
   schema "ownerships" do
-    field :is_admin, :boolean, default: false
+    field :is_owned, :boolean, default: false
 
     timestamps()
 
@@ -11,7 +11,7 @@ defmodule ExPusherLite.Ownership do
   end
 
   @required_fields [:organization_id, :application_id]
-  @optional_fields [:is_admin]
+  @optional_fields [:is_owned]
 
   @doc """
   Builds a changeset based on the `struct` and `params`.

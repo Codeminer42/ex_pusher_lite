@@ -1,6 +1,8 @@
 defmodule ExPusherLite.ExAdmin.User do
   use ExAdmin.Register
 
+  alias ExPusherLite.Repo
+
   register_resource ExPusherLite.User do
     index do
       selectable_column
@@ -13,7 +15,7 @@ defmodule ExPusherLite.ExAdmin.User do
       actions
     end
 
-    show _user do
+    show user do
       attributes_table do
         row :id
         row :name
@@ -27,6 +29,14 @@ defmodule ExPusherLite.ExAdmin.User do
         row :last_sign_in_at
         row :current_sign_in_ip
         row :last_sign_in_ip
+      end
+
+      panel "Enrolled in" do
+        user = user |> Repo.preload(enrollments: [:organization])
+        table_for user.enrollments do
+          column :id, fn(enrollment) -> a "Enrollment Id: #{enrollment.id}", href: admin_resource_path(enrollment, :show) end
+          column :name, fn(enrollment) -> a enrollment.organization.name, href: admin_resource_path(enrollment, :show) end
+        end
       end
     end
 

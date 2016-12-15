@@ -5,7 +5,7 @@ defmodule ExPusherLite.Repo.Migrations.CreateOwnership do
     create table(:ownerships) do
       add :organization_id, references(:organizations)
       add :application_id, references(:applications)
-      add :is_admin, :boolean, default: false, null: false
+      add :is_owned, :boolean, default: false, null: false
 
       timestamps()
     end
