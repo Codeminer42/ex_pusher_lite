@@ -40,9 +40,4 @@ defmodule ExPusherLite.EnrollmentTest do
       |> Enum.at(0)
     assert organization.name == context[:organization].name
   end
-
-  test "changeset with invalid attributes" do
-    changeset = Enrollment.changeset(%Enrollment{}, @invalid_attrs)
-    refute changeset.valid?
-  end
 end

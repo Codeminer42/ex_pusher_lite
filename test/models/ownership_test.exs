@@ -5,7 +5,7 @@ defmodule ExPusherLite.OwnershipTest do
 
   @valid_attrs_application %{name: "Foo App"}
   @valid_attrs_organization %{name: "Acme Inc."}
-  @invalid_attrs %{}
+  @invalid_attrs %{name: nil}
 
   setup do
     {:ok, application} = Application.changeset(%Application{}, @valid_attrs_application) |> Repo.insert
@@ -39,10 +39,5 @@ defmodule ExPusherLite.OwnershipTest do
     organization = application.organizations
       |> Enum.at(0)
     assert organization.name == context[:organization].name
-  end
-
-  test "changeset with invalid attributes" do
-    changeset = Ownership.changeset(%Ownership{}, @invalid_attrs)
-    refute changeset.valid?
   end
 end

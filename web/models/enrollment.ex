@@ -10,8 +10,8 @@ defmodule ExPusherLite.Enrollment do
     belongs_to :user, ExPusherLite.User
   end
 
-  @required_fields [:organization_id, :user_id]
-  @optional_fields [:is_admin]
+  @required_fields []
+  @optional_fields [:organization_id, :user_id, :is_admin]
 
   @doc """
   Builds a changeset based on the `struct` and `params`.

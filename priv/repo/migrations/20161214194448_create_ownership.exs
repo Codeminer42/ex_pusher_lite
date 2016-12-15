@@ -3,8 +3,8 @@ defmodule ExPusherLite.Repo.Migrations.CreateOwnership do
 
   def change do
     create table(:ownerships) do
-      add :organization_id, references(:organizations)
-      add :application_id, references(:applications)
+      add :organization_id, references(:organizations), null: false
+      add :application_id, references(:applications), null: false
       add :is_owned, :boolean, default: false, null: false
 
       timestamps()

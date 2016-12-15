@@ -10,8 +10,8 @@ defmodule ExPusherLite.Ownership do
     belongs_to :application, ExPusherLite.Application
   end
 
-  @required_fields [:organization_id, :application_id]
-  @optional_fields [:is_owned]
+  @required_fields []
+  @optional_fields [:organization_id, :application_id, :is_owned]
 
   @doc """
   Builds a changeset based on the `struct` and `params`.

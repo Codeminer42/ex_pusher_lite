@@ -3,8 +3,8 @@ defmodule ExPusherLite.Repo.Migrations.CreateEnrollment do
 
   def change do
     create table(:enrollments) do
-      add :user_id, references(:users)
-      add :organization_id, references(:organizations)
+      add :user_id, references(:users), null: false
+      add :organization_id, references(:organizations), null: false
       add :is_admin, :boolean, default: false, null: false
 
       timestamps()

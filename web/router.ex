@@ -57,7 +57,8 @@ defmodule ExPusherLite.Router do
   scope "/api", ExPusherLite do
     pipe_through :api
 
-    resources "/applications", ApplicationController, except: [:new, :edit]
-    resources "/organizations", OrganizationController, except: [:new, :edit]
+    resources "/organizations", OrganizationController, except: [:new, :edit] do
+      resources "/applications", ApplicationController, except: [:new, :edit]
+    end
   end
 end
