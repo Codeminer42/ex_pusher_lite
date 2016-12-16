@@ -16,7 +16,7 @@ Repo.delete_all User
 Repo.delete_all Application
 Repo.delete_all Organization
 
-User.changeset(%User{}, %{name: "Test Admin", email: "admin@example.com", password: "password", password_confirmation: "password"})
+User.changeset(%User{}, %{name: "Test Admin", email: "admin@example.com", password: "password", password_confirmation: "password", is_root: true})
 |> Repo.insert!
 |> Coherence.ControllerHelpers.confirm!
 
