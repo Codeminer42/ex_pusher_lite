@@ -11,6 +11,11 @@
 <div class="container">
   <hr />
   <h2>Chat Demo - First Channels Test</h2>
+
+  <script type="text/javascript" charset="utf-8">
+    window.appToken = "<%= @application_token %>";
+  </script>
+
   <div id='message-list' class="row">
   </div>
 

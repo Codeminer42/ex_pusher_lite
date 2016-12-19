@@ -1,27 +1,24 @@
 defmodule ExPusherLite.UserSocket do
   use Phoenix.Socket
 
+  alias ExPusherLite.{Application, Repo}
+
   ## Channels
-  # channel "room:*", ExPusherLite.RoomChannel
-  channel "lobby", ExPusherLite.LobbyChannel
+  channel "lobby:*", ExPusherLite.LobbyChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
   # transport :longpoll, Phoenix.Transports.LongPoll
 
-  # Socket params are passed from the client and can
-  # be used to verify and authenticate a user. After
-  # verification, you can put default assigns into
-  # the socket that will be set for all channels, ie
-  #
-  #     {:ok, assign(socket, :user_id, verified_user_id)}
-  #
-  # To deny connection, return `:error`.
-  #
-  # See `Phoenix.Token` documentation for examples in
-  # performing token verification on connect.
-  def connect(_params, socket) do
-    {:ok, socket}
+  # The client-side Socket must set the token parameter
+  # to be a valid ApplicationToken associated with the desired Application
+  def connect(%{"token" => token}, socket) do
+    case Repo.get_by(Application, app_key: token) do
+      nil ->
+        :error
+      _application ->
+        {:ok, assign(socket, :app_token, token)}
+    end
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
@@ -34,5 +31,5 @@ defmodule ExPusherLite.UserSocket do
   #     ExPusherLite.Endpoint.broadcast("users_socket:#{user.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
-  def id(_socket), do: nil
+  def id(socket), do: "applications_socket:#{socket.assigns.app_token}"
 end

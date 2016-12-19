@@ -33,11 +33,11 @@ defmodule ExPusherLite.Web do
       end
 
       def first do
-        Repo.one(from x in __MODULE__, order_by: [asc: x.id], limit: 1)
+        __MODULE__ |> first(:id) |> Repo.one
       end
 
       def last do
-        Repo.one(from x in __MODULE__, order_by: [desc: x.id], limit: 1)
+        __MODULE__ |> last(:id) |> Repo.one
       end
     end
   end

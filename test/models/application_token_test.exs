@@ -12,7 +12,7 @@ defmodule ExPusherLite.ApplicationTokenTest do
   end
 
   test "changeset with valid attributes", context do
-    assert = ApplicationToken.create_to(context[:application])
+    assert ApplicationToken.create_to(context[:application])
   end
 
   test "changeset with invalid attributes" do
