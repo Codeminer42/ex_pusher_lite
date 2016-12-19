@@ -10,7 +10,7 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias ExPusherLite.{Repo, User, Application, Organization, Ownership, Enrollment}
+alias ExPusherLite.{Repo, User, Application, Organization, Ownership, Enrollment, ApplicationToken}
 
 Repo.delete_all User
 Repo.delete_all Application
@@ -31,3 +31,6 @@ Enrollment.changeset(%Enrollment{}, %{user_id: user.id, organization_id: organiz
 
 Ownership.changeset(%Ownership{}, %{organization_id: organization.id, is_owned: true, application: %{name: "Test App"}})
 |> Repo.insert!
+
+application = Application.last
+ApplicationToken.create_to(application)
