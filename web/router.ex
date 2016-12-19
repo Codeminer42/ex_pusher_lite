@@ -4,18 +4,22 @@ defmodule ExPusherLite.Router do
   use ExAdmin.Router
 
   pipeline :browser do
-    use ExPusherLite.Router.Macros, :default_pipeline
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_flash
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+  end
+
+  pipeline :session do
     plug Coherence.Authentication.Session
   end
 
   pipeline :protected do
-    use ExPusherLite.Router.Macros, :default_pipeline
     plug Coherence.Authentication.Session, protected: true
   end
 
   pipeline :protected_root do
-    use ExPusherLite.Router.Macros, :default_pipeline
-    plug Coherence.Authentication.Session, protected: true
     plug ExPusherLite.Plugs.Authorized
   end
 
@@ -24,29 +28,29 @@ defmodule ExPusherLite.Router do
   end
 
   scope "/" do
-    pipe_through :browser
+    pipe_through [ :browser, :session ]
     coherence_routes
   end
 
   scope "/" do
-    pipe_through :protected
+    pipe_through [ :browser, :protected ]
     coherence_routes :protected
   end
 
   scope "/", ExPusherLite do
-    pipe_through :browser # Use the default browser stack
+    pipe_through [ :browser, :session ] # Use the default browser stack
 
     get "/", PageController, :index
   end
 
   scope "/", ExPusherLite do
-    pipe_through :protected
+    pipe_through [ :browser, :protected ]
 
     # get "/", PageController, :index
   end
 
   scope "/admin", ExAdmin do
-    pipe_through :protected_root
+    pipe_through [:protected, :protected_root]
 
     admin_routes
   end
