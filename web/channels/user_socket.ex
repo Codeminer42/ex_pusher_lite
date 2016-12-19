@@ -3,6 +3,7 @@ defmodule ExPusherLite.UserSocket do
 
   ## Channels
   # channel "room:*", ExPusherLite.RoomChannel
+  channel "lobby", ExPusherLite.LobbyChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
