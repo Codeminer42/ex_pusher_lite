@@ -3,6 +3,8 @@ defmodule ExPusherLite.ApplicationController do
 
   alias ExPusherLite.{Ownership, Organization, Application}
 
+  plug Guardian.Plug.EnsureAuthenticated
+
   def index(conn, %{"organization_id" => organization_id}) do
     applications = organization_id |> build_query |> Repo.all
 

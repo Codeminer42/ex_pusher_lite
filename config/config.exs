@@ -43,6 +43,7 @@ config :ex_admin,
   modules: [
     ExPusherLite.ExAdmin.Dashboard,
     ExPusherLite.ExAdmin.User,
+    ExPusherLite.ExAdmin.UserToken,
     ExPusherLite.ExAdmin.Application,
     ExPusherLite.ExAdmin.Organization,
     ExPusherLite.ExAdmin.Ownership,
@@ -51,6 +52,13 @@ config :ex_admin,
 
 config :xain, :after_callback, {Phoenix.HTML, :raw}
 
+config :guardian, Guardian,
+  allowed_algos: ["HS512"], # optional
+  verify_module: Guardian.JWT,  # optional
+  issuer: "ExPusherLite",
+  ttl: { 10, :days },
+  verify_issuer: true, # optional
+  serializer: ExPusherLite.GuardianSerializer
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

@@ -2,11 +2,15 @@ defmodule ExPusherLite.OrganizationControllerTest do
   use ExPusherLite.ConnCase
 
   alias ExPusherLite.Organization
-  @valid_attrs %{archived_at: %{day: 17, hour: 14, min: 0, month: 4, sec: 0, year: 2010}, name: "some content", slug: "some content"}
+  @valid_attrs %{name: "some content"}
   @invalid_attrs %{}
 
-  setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+  setup %{conn: _conn} do
+    conn = build_conn()
+      |> guardian_sign_in
+      |> put_req_header("accept", "application/json")
+
+    {:ok, conn: conn}
   end
 
   test "lists all entries on index", %{conn: conn} do

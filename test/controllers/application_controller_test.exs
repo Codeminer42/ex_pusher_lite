@@ -1,14 +1,19 @@
 defmodule ExPusherLite.ApplicationControllerTest do
   use ExPusherLite.ConnCase
 
-  alias ExPusherLite.{Organization, Application, Ownership}
+  alias ExPusherLite.{Organization, Application, User, Ownership}
   @valid_attrs_organization %{name: "Acme Inc."}
   @valid_attrs %{name: "some content"}
   @invalid_attrs %{name: nil}
 
-  setup %{conn: conn} do
+  setup %{conn: _conn} do
     {:ok, organization} = Organization.changeset(%Organization{}, @valid_attrs_organization) |> Repo.insert
-    {:ok, conn: put_req_header(conn, "accept", "application/json"), organization: organization}
+
+    conn = build_conn()
+      |> guardian_sign_in
+      |> put_req_header("accept", "application/json")
+
+    {:ok, conn: conn, organization: organization}
   end
 
   test "lists all entries on index", %{conn: conn, organization: organization} do

@@ -17,3 +17,6 @@ config :ex_pusher_lite, ExPusherLite.Repo,
   database: "ex_pusher_lite_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :guardian, Guardian,
+  secret_key: "F9zrIZZYAfvm32vCd3BWy2fISM7e5V9ZzPq40oBNPNcNhcFx3foREmMb8Jrbtmkx"

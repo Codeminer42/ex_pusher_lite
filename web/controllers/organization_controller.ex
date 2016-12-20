@@ -3,6 +3,8 @@ defmodule ExPusherLite.OrganizationController do
 
   alias ExPusherLite.Organization
 
+  plug Guardian.Plug.EnsureAuthenticated
+
   def index(conn, _params) do
     organizations = Repo.all(Organization)
     render(conn, "index.json", organizations: organizations)

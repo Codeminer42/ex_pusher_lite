@@ -20,7 +20,7 @@ defmodule ExPusherLite.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
 
-      alias ExPusherLite.Repo
+      alias ExPusherLite.{Repo, User}
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
@@ -29,6 +29,24 @@ defmodule ExPusherLite.ConnCase do
 
       # The default endpoint for testing
       @endpoint ExPusherLite.Endpoint
+      @valid_admin_user_attrs %{name: "John Wayne", email: "john@wayne.org", password: "secret", password_confirmation: "secret"}
+
+      def admin_user_and_token(params \\ @valid_admin_user_attrs) do
+        %User{}
+          |> User.changeset(params)
+          |> Repo.insert!
+          |> User.token_changeset
+          |> Repo.insert!
+      end
+
+      def guardian_sign_in(%Plug.Conn{} = conn, user) do
+        {:ok, jwt, _full_claims} = user || admin_user_and_token(@valid_admin_user_attrs)
+          |> Guardian.encode_and_sign
+
+        build_conn()
+          |> put_req_header("authorization", "Bearer #{jwt}")
+      end
+      def guardian_sign_in(%Plug.Conn{} = conn), do: guardian_sign_in(conn, nil)
     end
   end
 

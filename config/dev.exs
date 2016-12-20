@@ -41,3 +41,6 @@ config :ex_pusher_lite, ExPusherLite.Repo,
   database: "ex_pusher_lite_dev",
   hostname: "localhost",
   pool_size: 10
+
+config :guardian, Guardian,
+  secret_key: "d1As0fBqRZdpYJXXTDHeNjS3ftcGhev0u6vFNI4OWWqrvAwnOfVqwbcBfXhjtgvq"
