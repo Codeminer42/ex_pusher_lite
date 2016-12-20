@@ -9,7 +9,6 @@ defmodule ExPusherLite.Application do
 
     timestamps()
 
-    has_many :tokens, ExPusherLite.ApplicationToken, on_delete: :delete_all, on_replace: :delete
     has_many :ownerships, ExPusherLite.Ownership, on_delete: :delete_all, on_replace: :delete
     has_many :organizations, through: [:ownerships, :organization]
   end
@@ -27,4 +26,5 @@ defmodule ExPusherLite.Application do
     |> generate_uuid(:app_secret)
     |> validate_required(@required_fields)
   end
+
 end

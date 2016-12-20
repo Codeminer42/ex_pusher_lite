@@ -10,6 +10,7 @@ defmodule ExPusherLite.User do
 
     timestamps
 
+    has_many :tokens, ExPusherLite.UserToken, on_delete: :delete_all, on_replace: :delete
     has_many :enrollments, ExPusherLite.Enrollment, on_delete: :delete_all, on_replace: :delete
     has_many :organizations, through: [:enrollments, :organization]
   end
@@ -21,5 +22,16 @@ defmodule ExPusherLite.User do
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
     |> validate_coherence(params)
+  end
+
+  def token_changeset(%__MODULE__{id: user_id}) do
+    %ExPusherLite.UserToken{}
+      |> ExPusherLite.UserToken.changeset(%{user_id: user_id})
+  end
+
+  def token_changeset(%{id: user_id}), do: token_changeset(%__MODULE__{id: user_id})
+  def token_changeset(%{user_id: user_id}), do: token_changeset(%__MODULE__{id: user_id})
+  def token_changeset(user_id) when is_binary(user_id) do
+    token_changeset(%__MODULE__{id: user_id})
   end
 end

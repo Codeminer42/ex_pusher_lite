@@ -50,7 +50,7 @@ defmodule ExPusherLite.Router do
   end
 
   scope "/admin", ExAdmin do
-    pipe_through [:protected, :protected_root]
+    pipe_through [ :browser ,:protected, :protected_root]
 
     admin_routes
   end

@@ -37,7 +37,7 @@
             <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav">
                 <li class="active">
-                  <%= form_for @conn, session_path(@conn, :delete), [as: :session, method: "delete", class: "navbar-form navbar-right"], fn f  -> %>
+                  <%= form_for @conn, session_path(@conn, :delete), [as: :session, method: "delete", class: "navbar-form navbar-right"], fn _f  -> %>
                     <a class="btn btn-default" data-submit="parent" href="#" rel="nofollow">Sign Out</a>
                   <% end %>
                 </li>
