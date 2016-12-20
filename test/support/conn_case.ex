@@ -20,7 +20,7 @@ defmodule ExPusherLite.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
 
-      alias ExPusherLite.{Repo, User, Enrollment}
+      alias ExPusherLite.{Repo, User, Enrollment, Ownership}
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
@@ -29,7 +29,7 @@ defmodule ExPusherLite.ConnCase do
 
       # The default endpoint for testing
       @endpoint ExPusherLite.Endpoint
-      @valid_admin_user_attrs %{name: "John Wayne", email: "john@wayne.org", password: "secret", password_confirmation: "secret"}
+      @valid_admin_user_attrs %{name: "John Wayne", email: "john@wayne.org", password: "secret", password_confirmation: "secret", is_root: false}
 
       def create_admin_user(params \\ @valid_admin_user_attrs) do
         %User{}
@@ -59,6 +59,13 @@ defmodule ExPusherLite.ConnCase do
           %{user_id: test_user.id, organization: %{name: "Acme Inc."}, is_admin: true})
             |> Repo.insert!
         enrollment.organization
+      end
+
+      def build_application(organization) do
+        ownership = Ownership.changeset(%Ownership{},\
+          %{organization_id: organization.id, application: %{name: "Test App"}, is_owned: true})
+            |> Repo.insert!
+        application = ownership.application
       end
     end
   end

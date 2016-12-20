@@ -21,8 +21,7 @@ defmodule ExPusherLite.ApplicationControllerTest do
   end
 
   test "shows chosen resource", %{conn: conn, organization: organization} do
-    {:ok, ownership} = Ownership.changeset(%Ownership{}, %{organization_id: organization.id, application: %{name: "Test App"}, is_owned: true}) |> Repo.insert
-    application = ownership.application
+    application = build_application(organization)
     conn = get conn, organization_application_path(conn, :show, organization, application)
     assert json_response(conn, 200)["data"] == %{"id" => application.id,
       "name" => application.name,
@@ -49,26 +48,23 @@ defmodule ExPusherLite.ApplicationControllerTest do
   end
 
   test "updates and renders chosen resource when data is valid", %{conn: conn, organization: organization} do
-    {:ok, ownership} = Ownership.changeset(%Ownership{}, %{organization_id: organization.id, application: %{name: "Test App"}, is_owned: true}) |> Repo.insert
-    application = ownership.application
+    application = build_application(organization)
     conn = put conn, organization_application_path(conn, :update, organization, application), application: @valid_attrs
     assert json_response(conn, 200)["data"]["id"]
     assert Repo.get_by(Application, @valid_attrs)
   end
 
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, organization: organization} do
-    {:ok, ownership} = Ownership.changeset(%Ownership{}, %{organization_id: organization.id, application: %{name: "Test App"}, is_owned: true}) |> Repo.insert
-    application = ownership.application
+    application = build_application(organization)
     conn = put conn, organization_application_path(conn, :update, organization, application), application: @invalid_attrs
     assert json_response(conn, 422)["errors"] != %{}
   end
 
   test "deletes chosen resource", %{conn: conn, organization: organization} do
-    {:ok, ownership} = Ownership.changeset(%Ownership{}, %{organization_id: organization.id, application: %{name: "Test App"}, is_owned: true}) |> Repo.insert
-    application = ownership.application
+    application = build_application(organization)
     conn = delete conn, organization_application_path(conn, :delete, organization, application)
     assert response(conn, 204)
     refute Repo.get(Application, application.id)
-    refute Repo.get(Ownership, ownership.id)
+    assert Repo.aggregate(Ownership, :count, :id) == 0
   end
 end
