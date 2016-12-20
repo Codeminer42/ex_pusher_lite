@@ -25,6 +25,9 @@ defmodule ExPusherLite.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  pipeline :guardian do
     plug Guardian.Plug.VerifyHeader, realm: "Bearer"
     plug Guardian.Plug.LoadResource
   end
@@ -57,9 +60,14 @@ defmodule ExPusherLite.Router do
     admin_routes
   end
 
-  # Other scopes may use custom stacks.
   scope "/api", ExPusherLite do
     pipe_through :api
+
+    resources "/sessions", SessionController, only: [:create], as: "sign_in"
+  end
+
+  scope "/api", ExPusherLite do
+    pipe_through [:api, :guardian]
 
     resources "/organizations", OrganizationController, except: [:new, :edit] do
       resources "/applications", ApplicationController, except: [:new, :edit]

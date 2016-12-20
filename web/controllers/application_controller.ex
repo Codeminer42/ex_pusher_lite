@@ -1,7 +1,7 @@
 defmodule ExPusherLite.ApplicationController do
   use ExPusherLite.Web, :controller
 
-  alias ExPusherLite.{Enrollment, Ownership, Organization, Application}
+  alias ExPusherLite.{Enrollment, Ownership, Application}
 
   plug Guardian.Plug.EnsureAuthenticated
   plug :check_organization_enrollment_and_admin_privileges
