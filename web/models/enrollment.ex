@@ -23,4 +23,16 @@ defmodule ExPusherLite.Enrollment do
     |> cast_assoc(:organization)
     |> cast_assoc(:user)
   end
+
+  def by_organization_id_or_slug_and_user(organization_id, user_id) do
+    case Integer.parse(organization_id) do
+      {id, _} ->
+        from e in __MODULE__,
+          where: e.user_id == ^user_id and e.organization_id == ^id and e.is_admin == true
+      _ ->
+        from e in __MODULE__,
+          join: o in ExPusherLite.Organization, on: o.id == e.organization_id,
+          where: o.slug == ^organization_id and e.user_id == ^user_id and e.is_admin == true
+    end
+  end
 end

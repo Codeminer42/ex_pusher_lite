@@ -7,7 +7,9 @@ defmodule ExPusherLite.ApplicationController do
   plug :check_organization_enrollment_and_admin_privileges
 
   def index(conn, %{"organization_id" => organization_id}, _current_token, _claims) do
-    applications = organization_id |> build_query |> Repo.all
+    applications = organization_id
+      |> Application.by_organization_id_or_slug
+      |> Repo.all
 
     render(conn, "index.json", applications: applications)
   end
@@ -31,12 +33,19 @@ defmodule ExPusherLite.ApplicationController do
   end
 
   def show(conn, %{"organization_id" => organization_id, "id" => id}, _current_token, _claims) do
-    application = organization_id |> build_query |> Repo.get!(id)
+    application = organization_id
+      |> Application.by_organization_id_or_slug
+      |> Application.by_id_or_key(id)
+      |> Repo.one!
+
     render(conn, "show.json", application: application)
   end
 
   def update(conn, %{"organization_id" => organization_id, "id" => id, "application" => application_params}, _current_token, _claims) do
-    application = organization_id |> build_query |> Repo.get!(id)
+    application = organization_id
+      |> Application.by_organization_id_or_slug
+      |> Application.by_id_or_key(id)
+      |> Repo.one!
     changeset = Application.changeset(application, application_params)
 
     case Repo.update(changeset) do
@@ -50,7 +59,10 @@ defmodule ExPusherLite.ApplicationController do
   end
 
   def delete(conn, %{"organization_id" => organization_id, "id" => id}, _current_token, _claims) do
-    application = organization_id |> build_query |> Repo.get!(id)
+    application = organization_id
+      |> Application.by_organization_id_or_slug
+      |> Application.by_id_or_key(id)
+      |> Repo.one!
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
@@ -59,24 +71,9 @@ defmodule ExPusherLite.ApplicationController do
     send_resp(conn, :no_content, "")
   end
 
-  defp build_query(organization_id) do
-    case Integer.parse(organization_id) do
-      {id, _} ->
-        from a in Application,
-          join: w in Ownership, on: w.application_id == a.id,
-          join: o in Organization, on: w.organization_id == o.id,
-          where: o.id == ^id and w.is_owned == true
-      :error ->
-        from a in Application,
-          join: w in Ownership, on: w.application_id == a.id,
-          join: o in Organization, on: w.organization_id == o.id,
-          where: o.slug == ^organization_id and w.is_owned == true
-    end
-  end
-
   defp check_organization_enrollment_and_admin_privileges(conn, _) do
     %{params: %{"organization_id" => organization_id}, private: %{guardian_default_resource: current_token}} = conn
-    if Repo.get_by(Enrollment, user_id: current_token.user.id, organization_id: organization_id, is_admin: true) do
+    if Enrollment.by_organization_id_or_slug_and_user(organization_id, current_token.user.id) |> Repo.one do
       conn
     else
       conn
@@ -84,5 +81,6 @@ defmodule ExPusherLite.ApplicationController do
         |> halt
     end
   end
+
 
 end

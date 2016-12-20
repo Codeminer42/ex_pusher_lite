@@ -20,28 +20,17 @@ defmodule ExPusherLite.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
 
-      alias ExPusherLite.{Repo, User, Enrollment, Ownership}
+      alias ExPusherLite.Repo
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
 
       import ExPusherLite.Router.Helpers
 
+      import ExPusherLite.Factory
+
       # The default endpoint for testing
       @endpoint ExPusherLite.Endpoint
-      @valid_admin_user_attrs %{name: "John Wayne", email: "john@wayne.org", password: "secret", password_confirmation: "secret", is_root: false}
-
-      def create_admin_user(params \\ @valid_admin_user_attrs) do
-        %User{}
-          |> User.changeset(params)
-          |> Repo.insert!
-      end
-
-      def create_admin_token(admin_user) do
-        admin_user
-          |> User.token_changeset
-          |> Repo.insert!
-      end
 
       def guardian_sign_in(%Plug.Conn{} = conn, user, token \\ nil) do
         user  = user  || create_admin_user
@@ -53,20 +42,6 @@ defmodule ExPusherLite.ConnCase do
           |> put_req_header("authorization", "Bearer #{jwt}")
       end
       def guardian_sign_in(%Plug.Conn{} = conn), do: guardian_sign_in(conn, nil)
-
-      def build_organization(test_user) do
-        enrollment = Enrollment.changeset(%Enrollment{},
-          %{user_id: test_user.id, organization: %{name: "Acme Inc."}, is_admin: true})
-            |> Repo.insert!
-        enrollment.organization
-      end
-
-      def build_application(organization) do
-        ownership = Ownership.changeset(%Ownership{},\
-          %{organization_id: organization.id, application: %{name: "Test App"}, is_owned: true})
-            |> Repo.insert!
-        application = ownership.application
-      end
     end
   end
 

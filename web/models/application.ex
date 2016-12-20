@@ -1,6 +1,8 @@
 defmodule ExPusherLite.Application do
   use ExPusherLite.Web, :model
 
+  alias ExPusherLite.{Ownership, Organization}
+
   schema "applications" do
     field :name, :string
     field :app_key, :string
@@ -27,4 +29,27 @@ defmodule ExPusherLite.Application do
     |> validate_required(@required_fields)
   end
 
+  def by_organization_id_or_slug(organization_id) do
+    case Integer.parse(organization_id) do
+      {id, ""} ->
+        from a in __MODULE__,
+          join: w in Ownership, on: w.application_id == a.id,
+          join: o in Organization, on: w.organization_id == o.id,
+          where: o.id == ^id and w.is_owned == true
+      _ ->
+        from a in __MODULE__,
+          join: w in Ownership, on: w.application_id == a.id,
+          join: o in Organization, on: w.organization_id == o.id,
+          where: o.slug == ^organization_id and w.is_owned == true
+    end
+  end
+
+  def by_id_or_key(queryable, application_id) do
+    case Integer.parse(application_id) do
+      {id, ""} ->
+        queryable |> where([a], a.id == ^id)
+      _ ->
+        queryable |> where([a], a.app_key == ^application_id)
+    end
+  end
 end

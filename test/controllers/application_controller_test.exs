@@ -1,7 +1,7 @@
 defmodule ExPusherLite.ApplicationControllerTest do
   use ExPusherLite.ConnCase
 
-  alias ExPusherLite.{Application, User, Ownership}
+  alias ExPusherLite.{Application, Ownership}
   @valid_attrs %{name: "some content"}
   @invalid_attrs %{name: nil}
 

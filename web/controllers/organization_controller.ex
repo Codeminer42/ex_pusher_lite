@@ -34,7 +34,12 @@ defmodule ExPusherLite.OrganizationController do
     organization = current_token.user
       |> build_query
       |> Repo.get!(id)
-    render(conn, "show.json", organization: organization)
+
+    if organization do
+      render(conn, "show.json", organization: organization)
+    else
+      send_resp(conn, 404, "")
+    end
   end
 
   def update(conn, %{"id" => id, "organization" => organization_params}, current_token, _claims) do
