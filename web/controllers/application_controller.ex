@@ -71,6 +71,23 @@ defmodule ExPusherLite.ApplicationController do
     send_resp(conn, :no_content, "")
   end
 
+  def event(conn, %{"organization_id" => organization_id, "application_id" => id} = params, _current_token, _claims) do
+    application = organization_id
+      |> Application.by_organization_id_or_slug
+      |> Application.by_id_or_key(id)
+      |> Repo.one!
+
+    # TODO hard coding the channel payload, but we want to receive arbitrary JSON, convert to Map and broadcast that
+    event   = params["event"] || "new_message"
+    name    = params["name"] || "Robot"
+    message = params["message"] || "Hello World!"
+
+    ExPusherLite.Endpoint.broadcast_from(self(),
+      "lobby:#{application.app_key}", event, %{name: name, message: message})
+
+    send_resp(conn, :no_content, "")
+  end
+
   defp check_organization_enrollment_and_admin_privileges(conn, _) do
     %{params: %{"organization_id" => organization_id}, private: %{guardian_default_resource: current_token}} = conn
     if Enrollment.by_organization_id_or_slug_and_user(organization_id, current_token.user.id) |> Repo.one do

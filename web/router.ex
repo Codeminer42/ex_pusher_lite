@@ -70,7 +70,9 @@ defmodule ExPusherLite.Router do
     pipe_through [:api, :guardian]
 
     resources "/organizations", OrganizationController, except: [:new, :edit] do
-      resources "/applications", ApplicationController, except: [:new, :edit]
+      resources "/applications", ApplicationController, except: [:new, :edit] do
+        post "/event", ApplicationController, :event
+      end
     end
   end
 end

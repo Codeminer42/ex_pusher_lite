@@ -32,6 +32,12 @@ Which in turn will give you the following response:
 
     {"data":[{"name":"Test App","id":1,"archived_at":null,"app_secret":"40362ea6-c6ab-11e6-94dd-28cfe91ef193","app_key":"40362820-c6ab-11e6-9492-28cfe91ef193"}]}
 
+Now one can broadcast messages to a Channel like this:
+
+    curl -X POST -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJVc2VyVG9rZW46NDAzNmRlODItYzZhYi0xMWU2LTlhNTMtMjhjZmU5MWVmMTkzIiwiZXhwIjoxNDgzMTIyNzUxLCJpYXQiOjE0ODIyNTg3NTEsImlzcyI6IkV4UHVzaGVyTGl0ZSIsImp0aSI6Ijg5Y2NkZTIyLWNhMWMtNDJmZS1iZjhhLWYzNzEzOTRkMmRiNSIsInBlbSI6e30sInN1YiI6IlVzZXJUb2tlbjo0MDM2ZGU4Mi1jNmFiLTExZTYtOWE1My0yOGNmZTkxZWYxOTMiLCJ0eXAiOiJhY2Nlc3MifQ.niUkU7o9BE4JXEiIh1oNEm3wS0bet2a0URqL_B5rUgw_oLCTXP-xMDMMtEgNMnDYEDq_o_bcrvQGR7dnsqyWtw" http://localhost:4000/api/organizations/acme-inc/applications/40362820-c6ab-11e6-9492-28cfe91ef193/event\?message\=Hello%20World
+
+Check the homepage example for instruction on how to setup the Socket connection (also the `js/socket.js` example).
+
 ### Development
 
 To start your Phoenix app:
