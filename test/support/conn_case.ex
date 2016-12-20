@@ -20,7 +20,7 @@ defmodule ExPusherLite.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
 
-      alias ExPusherLite.{Repo, User}
+      alias ExPusherLite.{Repo, User, Enrollment}
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
@@ -31,22 +31,35 @@ defmodule ExPusherLite.ConnCase do
       @endpoint ExPusherLite.Endpoint
       @valid_admin_user_attrs %{name: "John Wayne", email: "john@wayne.org", password: "secret", password_confirmation: "secret"}
 
-      def admin_user_and_token(params \\ @valid_admin_user_attrs) do
+      def create_admin_user(params \\ @valid_admin_user_attrs) do
         %User{}
           |> User.changeset(params)
           |> Repo.insert!
+      end
+
+      def create_admin_token(admin_user) do
+        admin_user
           |> User.token_changeset
           |> Repo.insert!
       end
 
-      def guardian_sign_in(%Plug.Conn{} = conn, user) do
-        {:ok, jwt, _full_claims} = user || admin_user_and_token(@valid_admin_user_attrs)
-          |> Guardian.encode_and_sign
+      def guardian_sign_in(%Plug.Conn{} = conn, user, token \\ nil) do
+        user  = user  || create_admin_user
+        token = token || create_admin_token(user)
+        {:ok, jwt, _full_claims} = Guardian.encode_and_sign(token)
 
         build_conn()
+          |> assign(:test_user, user)
           |> put_req_header("authorization", "Bearer #{jwt}")
       end
       def guardian_sign_in(%Plug.Conn{} = conn), do: guardian_sign_in(conn, nil)
+
+      def build_organization(test_user) do
+        enrollment = Enrollment.changeset(%Enrollment{},
+          %{user_id: test_user.id, organization: %{name: "Acme Inc."}, is_admin: true})
+            |> Repo.insert!
+        enrollment.organization
+      end
     end
   end
 

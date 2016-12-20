@@ -3,7 +3,7 @@ defmodule ExPusherLite.OrganizationControllerTest do
 
   alias ExPusherLite.Organization
   @valid_attrs %{name: "some content"}
-  @invalid_attrs %{}
+  @invalid_attrs %{name: ""}
 
   setup %{conn: _conn} do
     conn = build_conn()
@@ -18,8 +18,8 @@ defmodule ExPusherLite.OrganizationControllerTest do
     assert json_response(conn, 200)["data"] == []
   end
 
-  test "shows chosen resource", %{conn: conn} do
-    organization = Repo.insert! %Organization{}
+  test "shows chosen resource", %{conn: %{assigns: %{test_user: test_user}} = conn} do
+    organization = build_organization(test_user)
     conn = get conn, organization_path(conn, :show, organization)
     assert json_response(conn, 200)["data"] == %{"id" => organization.id,
       "name" => organization.name,
@@ -44,21 +44,21 @@ defmodule ExPusherLite.OrganizationControllerTest do
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  test "updates and renders chosen resource when data is valid", %{conn: conn} do
-    organization = Repo.insert! %Organization{}
+  test "updates and renders chosen resource when data is valid", %{conn: %{assigns: %{test_user: test_user}} = conn} do
+    organization = build_organization(test_user)
     conn = put conn, organization_path(conn, :update, organization), organization: @valid_attrs
     assert json_response(conn, 200)["data"]["id"]
     assert Repo.get_by(Organization, @valid_attrs)
   end
 
-  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn} do
-    organization = Repo.insert! %Organization{}
+  test "does not update chosen resource and renders errors when data is invalid", %{conn: %{assigns: %{test_user: test_user}} = conn} do
+    organization = build_organization(test_user)
     conn = put conn, organization_path(conn, :update, organization), organization: @invalid_attrs
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  test "deletes chosen resource", %{conn: conn} do
-    organization = Repo.insert! %Organization{}
+  test "deletes chosen resource", %{conn: %{assigns: %{test_user: test_user}} = conn} do
+    organization = build_organization(test_user)
     conn = delete conn, organization_path(conn, :delete, organization)
     assert response(conn, 204)
     refute Repo.get(Organization, organization.id)

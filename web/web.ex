@@ -45,6 +45,7 @@ defmodule ExPusherLite.Web do
   def controller do
     quote do
       use Phoenix.Controller
+      use Guardian.Phoenix.Controller
 
       alias ExPusherLite.Repo
       import Ecto

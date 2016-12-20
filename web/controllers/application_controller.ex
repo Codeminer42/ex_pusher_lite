@@ -1,17 +1,18 @@
 defmodule ExPusherLite.ApplicationController do
   use ExPusherLite.Web, :controller
 
-  alias ExPusherLite.{Ownership, Organization, Application}
+  alias ExPusherLite.{Enrollment, Ownership, Organization, Application}
 
   plug Guardian.Plug.EnsureAuthenticated
+  plug :check_organization_enrollment_and_admin_privileges
 
-  def index(conn, %{"organization_id" => organization_id}) do
+  def index(conn, %{"organization_id" => organization_id}, _current_token, _claims) do
     applications = organization_id |> build_query |> Repo.all
 
     render(conn, "index.json", applications: applications)
   end
 
-  def create(conn, %{"organization_id" => organization_id, "application" => application_params}) do
+  def create(conn, %{"organization_id" => organization_id, "application" => application_params}, _current_token, _claims) do
     changeset = Ownership.changeset(%Ownership{},
       %{organization_id: organization_id, application: application_params, is_owned: true})
 
@@ -29,12 +30,12 @@ defmodule ExPusherLite.ApplicationController do
     end
   end
 
-  def show(conn, %{"organization_id" => organization_id, "id" => id}) do
+  def show(conn, %{"organization_id" => organization_id, "id" => id}, _current_token, _claims) do
     application = organization_id |> build_query |> Repo.get!(id)
     render(conn, "show.json", application: application)
   end
 
-  def update(conn, %{"organization_id" => organization_id, "id" => id, "application" => application_params}) do
+  def update(conn, %{"organization_id" => organization_id, "id" => id, "application" => application_params}, _current_token, _claims) do
     application = organization_id |> build_query |> Repo.get!(id)
     changeset = Application.changeset(application, application_params)
 
@@ -48,7 +49,7 @@ defmodule ExPusherLite.ApplicationController do
     end
   end
 
-  def delete(conn, %{"organization_id" => organization_id, "id" => id}) do
+  def delete(conn, %{"organization_id" => organization_id, "id" => id}, _current_token, _claims) do
     application = organization_id |> build_query |> Repo.get!(id)
 
     # Here we use delete! (with a bang) because we expect
@@ -64,12 +65,23 @@ defmodule ExPusherLite.ApplicationController do
         from a in Application,
           join: w in Ownership, on: w.application_id == a.id,
           join: o in Organization, on: w.organization_id == o.id,
-          where: o.id == ^id
+          where: o.id == ^id and w.is_owned == true
       :error ->
         from a in Application,
           join: w in Ownership, on: w.application_id == a.id,
           join: o in Organization, on: w.organization_id == o.id,
-          where: o.slug == ^organization_id
+          where: o.slug == ^organization_id and w.is_owned == true
+    end
+  end
+
+  defp check_organization_enrollment_and_admin_privileges(conn, _) do
+    %{params: %{"organization_id" => organization_id}, private: %{guardian_default_resource: current_token}} = conn
+    if Repo.get_by(Enrollment, user_id: current_token.user.id, organization_id: organization_id, is_admin: true) do
+      conn
+    else
+      conn
+        |> put_status(401)
+        |> halt
     end
   end
 

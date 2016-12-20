@@ -11,7 +11,8 @@ defmodule ExPusherLite.GuardianSerializer do
   def from_token("UserToken:" <> token) do
     user_token = from(t in UserToken,
       join: a in User, on: a.id == t.user_id,
-      where: t.token == ^token and is_nil(t.invalidated_at))
+      where: t.token == ^token and is_nil(t.invalidated_at),
+      preload: [:user])
         |> Repo.one
     { :ok, user_token }
   end

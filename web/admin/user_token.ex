@@ -1,8 +1,6 @@
 defmodule ExPusherLite.ExAdmin.UserToken do
   use ExAdmin.Register
 
-  alias ExPusherLite.Repo
-
   query do
     %{all: [preload: [:user]]}
   end

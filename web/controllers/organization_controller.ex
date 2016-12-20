@@ -1,24 +1,28 @@
 defmodule ExPusherLite.OrganizationController do
   use ExPusherLite.Web, :controller
 
-  alias ExPusherLite.Organization
+  alias ExPusherLite.{Organization, Enrollment}
 
   plug Guardian.Plug.EnsureAuthenticated
 
-  def index(conn, _params) do
-    organizations = Repo.all(Organization)
+  def index(conn, _params, current_token, _claims) do
+    organizations = current_token.user
+      |> build_query
+      |> Repo.all
+
     render(conn, "index.json", organizations: organizations)
   end
 
-  def create(conn, %{"organization" => organization_params}) do
-    changeset = Organization.changeset(%Organization{}, organization_params)
+  def create(conn, %{"organization" => organization_params}, current_token, _claims) do
+    changeset = Enrollment.changeset(%Enrollment{},
+      %{user_id: current_token.user.id, organization: organization_params, is_admin: true})
 
     case Repo.insert(changeset) do
-      {:ok, organization} ->
+      {:ok, enrollment} ->
         conn
         |> put_status(:created)
-        |> put_resp_header("location", organization_path(conn, :show, organization))
-        |> render("show.json", organization: organization)
+        |> put_resp_header("location", organization_path(conn, :show, enrollment.organization))
+        |> render("show.json", organization: enrollment.organization)
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -26,13 +30,17 @@ defmodule ExPusherLite.OrganizationController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    organization = Repo.get!(Organization, id)
+  def show(conn, %{"id" => id}, current_token, _claims) do
+    organization = current_token.user
+      |> build_query
+      |> Repo.get!(id)
     render(conn, "show.json", organization: organization)
   end
 
-  def update(conn, %{"id" => id, "organization" => organization_params}) do
-    organization = Repo.get!(Organization, id)
+  def update(conn, %{"id" => id, "organization" => organization_params}, current_token, _claims) do
+    organization = current_token.user
+      |> build_query
+      |> Repo.get!(id)
     changeset = Organization.changeset(organization, organization_params)
 
     case Repo.update(changeset) do
@@ -45,13 +53,25 @@ defmodule ExPusherLite.OrganizationController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    organization = Repo.get!(Organization, id)
+  def delete(conn, %{"id" => id}, current_token, _claims) do
+    organization = current_token.user
+      |> build_query
+      |> Repo.get!(id)
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
     Repo.delete!(organization)
 
     send_resp(conn, :no_content, "")
+  end
+
+  defp build_query(current_user) do
+    if current_user.is_root do
+      Organization
+    else
+      from o in Organization,
+        join: e in Enrollment, on: e.organization_id == o.id,
+        where: e.user_id == ^current_user.id
+    end
   end
 end
