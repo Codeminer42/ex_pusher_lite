@@ -5,17 +5,17 @@ defmodule ExPusherLite.OrganizationController do
 
   plug Guardian.Plug.EnsureAuthenticated
 
-  def index(conn, _params, current_token, _claims) do
-    organizations = current_token.user
+  def index(conn, _params, current_user, _claims) do
+    organizations = current_user
       |> build_query
       |> Repo.all
 
     render(conn, "index.json", organizations: organizations)
   end
 
-  def create(conn, %{"organization" => organization_params}, current_token, _claims) do
+  def create(conn, %{"organization" => organization_params}, current_user, _claims) do
     changeset = Enrollment.changeset(%Enrollment{},
-      %{user_id: current_token.user.id, organization: organization_params, is_admin: true})
+      %{user_id: current_user.id, organization: organization_params, is_admin: true})
 
     case Repo.insert(changeset) do
       {:ok, enrollment} ->
@@ -30,8 +30,8 @@ defmodule ExPusherLite.OrganizationController do
     end
   end
 
-  def show(conn, %{"id" => id}, current_token, _claims) do
-    organization = current_token.user
+  def show(conn, %{"id" => id}, current_user, _claims) do
+    organization = current_user
       |> build_query
       |> Repo.get!(id)
 
@@ -42,8 +42,8 @@ defmodule ExPusherLite.OrganizationController do
     end
   end
 
-  def update(conn, %{"id" => id, "organization" => organization_params}, current_token, _claims) do
-    organization = current_token.user
+  def update(conn, %{"id" => id, "organization" => organization_params}, current_user, _claims) do
+    organization = current_user
       |> build_query
       |> Repo.get!(id)
     changeset = Organization.changeset(organization, organization_params)
@@ -58,8 +58,8 @@ defmodule ExPusherLite.OrganizationController do
     end
   end
 
-  def delete(conn, %{"id" => id}, current_token, _claims) do
-    organization = current_token.user
+  def delete(conn, %{"id" => id}, current_user, _claims) do
+    organization = current_user
       |> build_query
       |> Repo.get!(id)
 

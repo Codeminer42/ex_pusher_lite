@@ -32,4 +32,21 @@ defmodule ExPusherLite.UserToken do
       where: t.token == ^token and is_nil(t.invalidated_at))
     |> Repo.one
   end
+
+  def jwt(user, params) do
+    {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :access, get_claims(user, params))
+    jwt
+  end
+
+  defp get_claims(%User{} = user, params) do
+    api_perms     = unless params["channel"], do: [:read, :write], else: []
+    channel_perms = if params["channel"],     do: [:read, :write], else: []
+    admin_perms   = if user.is_root,          do: [:read, :write], else: []
+    ttl           = if params["channel"],     do: 5, else: 2 # days
+    Guardian.Claims.app_claims
+      |> Map.put("api", api_perms)
+      |> Map.put("channel", channel_perms)
+      |> Map.put("admin", admin_perms)
+      |> Guardian.Claims.ttl({ttl, :days})
+  end
 end

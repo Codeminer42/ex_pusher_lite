@@ -34,8 +34,7 @@ defmodule ExPusherLite.ConnCase do
 
       def guardian_sign_in(%Plug.Conn{} = conn, user, token \\ nil) do
         user  = user  || create_admin_user
-        token = token || create_admin_token(user)
-        {:ok, jwt, _full_claims} = Guardian.encode_and_sign(token)
+        {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user)
 
         build_conn()
           |> assign(:test_user, user)

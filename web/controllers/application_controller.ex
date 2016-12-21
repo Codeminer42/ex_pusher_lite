@@ -6,7 +6,7 @@ defmodule ExPusherLite.ApplicationController do
   plug Guardian.Plug.EnsureAuthenticated
   plug :check_organization_enrollment_and_admin_privileges
 
-  def index(conn, %{"organization_id" => organization_id}, _current_token, _claims) do
+  def index(conn, %{"organization_id" => organization_id}, _current_user, _claims) do
     applications = organization_id
       |> Application.by_organization_id_or_slug
       |> Repo.all
@@ -14,7 +14,7 @@ defmodule ExPusherLite.ApplicationController do
     render(conn, "index.json", applications: applications)
   end
 
-  def create(conn, %{"organization_id" => organization_id, "application" => application_params}, _current_token, _claims) do
+  def create(conn, %{"organization_id" => organization_id, "application" => application_params}, _current_user, _claims) do
     changeset = Ownership.changeset(%Ownership{},
       %{organization_id: organization_id, application: application_params, is_owned: true})
 
@@ -32,7 +32,7 @@ defmodule ExPusherLite.ApplicationController do
     end
   end
 
-  def show(conn, %{"organization_id" => organization_id, "id" => id}, _current_token, _claims) do
+  def show(conn, %{"organization_id" => organization_id, "id" => id}, _current_user, _claims) do
     application = organization_id
       |> Application.by_organization_id_or_slug
       |> Application.by_id_or_key(id)
@@ -41,7 +41,7 @@ defmodule ExPusherLite.ApplicationController do
     render(conn, "show.json", application: application)
   end
 
-  def update(conn, %{"organization_id" => organization_id, "id" => id, "application" => application_params}, _current_token, _claims) do
+  def update(conn, %{"organization_id" => organization_id, "id" => id, "application" => application_params}, _current_user, _claims) do
     application = organization_id
       |> Application.by_organization_id_or_slug
       |> Application.by_id_or_key(id)
@@ -58,7 +58,7 @@ defmodule ExPusherLite.ApplicationController do
     end
   end
 
-  def delete(conn, %{"organization_id" => organization_id, "id" => id}, _current_token, _claims) do
+  def delete(conn, %{"organization_id" => organization_id, "id" => id}, _current_user, _claims) do
     application = organization_id
       |> Application.by_organization_id_or_slug
       |> Application.by_id_or_key(id)
@@ -71,7 +71,7 @@ defmodule ExPusherLite.ApplicationController do
     send_resp(conn, :no_content, "")
   end
 
-  def event(conn, %{"organization_id" => organization_id, "application_id" => id} = params, _current_token, _claims) do
+  def event(conn, %{"organization_id" => organization_id, "application_id" => id, "event" => event} = params, _current_user, _claims) do
     application = organization_id
       |> Application.by_organization_id_or_slug
       |> Application.by_id_or_key(id)
@@ -89,8 +89,8 @@ defmodule ExPusherLite.ApplicationController do
   end
 
   defp check_organization_enrollment_and_admin_privileges(conn, _) do
-    %{params: %{"organization_id" => organization_id}, private: %{guardian_default_resource: current_token}} = conn
-    if Enrollment.by_organization_id_or_slug_and_user(organization_id, current_token.user.id) |> Repo.one do
+    %{params: %{"organization_id" => organization_id}, private: %{guardian_default_resource: current_user}} = conn
+    if Enrollment.by_organization_id_or_slug_and_user(organization_id, current_user.id) |> Repo.one do
       conn
     else
       conn
@@ -98,6 +98,4 @@ defmodule ExPusherLite.ApplicationController do
         |> halt
     end
   end
-
-
 end

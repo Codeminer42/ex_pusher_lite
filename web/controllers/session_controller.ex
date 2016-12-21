@@ -3,16 +3,11 @@ defmodule ExPusherLite.SessionController do
 
   alias ExPusherLite.UserToken
 
-  def create(conn, %{"token" => token}, _, _) do
-    user_token = from(t in UserToken,
-      where: t.token == ^token and is_nil(t.invalidated_at))
-      |> Repo.one
-
-    if user_token do
-      {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user_token)
+  def create(conn, %{"token" => token} = params, _, _) do
+    if user = UserToken.get_by(token) do
       conn
         |> put_status(:created)
-        |> render("show.json", jwt: jwt)
+        |> render("show.json", jwt: UserToken.jwt(user, params))
     else
       changeset = Ecto.Changeset.change(%UserToken{})
         |> Ecto.Changeset.add_error(:token, "invalid")

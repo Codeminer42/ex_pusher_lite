@@ -58,7 +58,12 @@ config :guardian, Guardian,
   issuer: "ExPusherLite",
   ttl: { 10, :days },
   verify_issuer: true, # optional
-  serializer: ExPusherLite.GuardianSerializer
+  serializer: ExPusherLite.GuardianSerializer,
+  permissions: %{
+    api: [:read, :write],
+    channel: [:read, :write],
+    admin: [:read, :write]
+  }
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
