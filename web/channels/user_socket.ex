@@ -1,5 +1,6 @@
 defmodule ExPusherLite.UserSocket do
   use Phoenix.Socket
+  import Guardian.Phoenix.Socket
 
   alias ExPusherLite.{Application, Repo}
 
@@ -12,13 +13,24 @@ defmodule ExPusherLite.UserSocket do
 
   # The client-side Socket must set the token parameter
   # to be a valid ApplicationToken associated with the desired Application
-  def connect(%{"token" => token}, socket) do
-    case Repo.get_by(Application, app_key: token) do
-      nil ->
-        :error
-      _application ->
-        {:ok, assign(socket, :app_token, token)}
-    end
+  # and send a valid JWT generated through the /api/sessions?channel=true API endpoint using a valid UserToken
+  def connect(%{"app_key" => app_key, "guardian_token" => jwt, "unique_identifier" => uid}, socket) do
+    with {:ok, authed_socket, _} <- sign_in(socket, jwt),
+         _application            <- Repo.get_by!(Application, app_key: app_key),
+         user                    <- Guardian.Phoenix.Socket.current_resource(authed_socket)
+      do
+        authed_socket = authed_socket
+          |> assign(:app_key, app_key)
+          |> assign(:user_id, user.id)
+          |> assign(:uid, uid)
+        {:ok, authed_socket}
+      else
+        _err -> :error
+      end
+  end
+
+  def connect(_params, _socket) do
+    :error
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
@@ -31,5 +43,7 @@ defmodule ExPusherLite.UserSocket do
   #     ExPusherLite.Endpoint.broadcast("users_socket:#{user.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
-  def id(socket), do: "applications_socket:#{socket.assigns.app_token}"
+  def id(socket), do: generate_id(socket.assigns.app_key, socket.assigns.uid)
+
+  def generate_id(app_key, uid), do: "lobby:#{app_key}/uid:#{uid}"
 end

@@ -12,21 +12,18 @@
   <hr />
   <h2>Chat Demo - First Channels Test</h2>
 
-  <script type="text/javascript" charset="utf-8">
-    window.appToken = "<%= @application_token %>";
-  </script>
-
-  <div id='message-list' class="row">
-  </div>
+  <%= form_tag page_path(@conn, :create), method: "post" do %>
 
   <div class='row form-group'>
-    <div class='col-md-3'>
-      <input type='text' id='name' class='form-control' placeholder='Name' />
+    <div class='col-md-6'>
+      <input type='text' id='name' name='name' class='form-control' placeholder='Name' />
     </div>
-    <div class='col-md-9'>
-      <input type='text' id='message' class='form-control' placeholder='Message' />
+    <div class='col-md-6'>
+      <button class="btn btn-primary" type="submit">Submit</button>
     </div>
   </div>
+
+  <% end %>
 
   </div>
 </div>

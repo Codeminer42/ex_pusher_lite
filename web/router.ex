@@ -46,12 +46,11 @@ defmodule ExPusherLite.Router do
     pipe_through [ :browser, :session ] # Use the default browser stack
 
     get "/", PageController, :index
+    post "/", PageController, :create
   end
 
   scope "/", ExPusherLite do
     pipe_through [ :browser, :protected ]
-
-    # get "/", PageController, :index
   end
 
   scope "/admin", ExAdmin do
@@ -71,7 +70,7 @@ defmodule ExPusherLite.Router do
 
     resources "/organizations", OrganizationController, except: [:new, :edit] do
       resources "/applications", ApplicationController, except: [:new, :edit] do
-        post "/event", ApplicationController, :event
+        post "/event/:event", ApplicationController, :event
       end
     end
   end

@@ -77,14 +77,13 @@ defmodule ExPusherLite.ApplicationController do
       |> Application.by_id_or_key(id)
       |> Repo.one!
 
-    # TODO hard coding the channel payload, but we want to receive arbitrary JSON, convert to Map and broadcast that
-    event   = params["event"] || "new_message"
-    name    = params["name"] || "Robot"
-    message = params["message"] || "Hello World!"
+    room_name = if params["direct"] and params["uid"] do
+        ExPusherLite.UserSocket.generate_id(application.app_key, params["uid"])
+      else
+        "lobby:#{application.app_key}"
+      end
 
-    ExPusherLite.Endpoint.broadcast_from(self(),
-      "lobby:#{application.app_key}", event, %{name: name, message: message})
-
+    ExPusherLite.Endpoint.broadcast_from(self(), room_name, event, parse_payload(params))
     send_resp(conn, :no_content, "")
   end
 
@@ -96,6 +95,14 @@ defmodule ExPusherLite.ApplicationController do
       conn
         |> put_status(401)
         |> halt
+    end
+  end
+
+  defp parse_payload(params) do
+    if params["payload"] do
+      Poison.decode!(params["payload"])
+    else
+      Map.drop(params, ["organization_id", "application_id", "event", "new_event"])
     end
   end
 end

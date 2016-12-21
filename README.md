@@ -22,11 +22,11 @@ In order to access this endpoint it is necessary to sign in using a valid UserTo
 
 That will give you a response in the following format:
 
-    {"jwt":"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJVc2VyVG9rZW46NDAzNmRlODItYzZhYi0xMWU2LTlhNTMtMjhjZmU5MWVmMTkzIiwiZXhwIjoxNDgzMTI1NDE1LCJpYXQiOjE0ODIyNjE0MTUsImlzcyI6IkV4UHVzaGVyTGl0ZSIsImp0aSI6ImQ0ZjkxNTNhLWU0M2UtNGNhYy1hMzE0LWM5ZGQ0ZDgwYTA1MCIsInBlbSI6e30sInN1YiI6IlVzZXJUb2tlbjo0MDM2ZGU4Mi1jNmFiLTExZTYtOWE1My0yOGNmZTkxZWYxOTMiLCJ0eXAiOiJhY2Nlc3MifQ.w1yOAhK2U9QvjSjRtYjBy3Jm1HQzw5ef3Q47LLktq65hEa9RtC6cX644KJrnxBSG-9H5p45KeN_sLp1uaKqPnQ"}
+    {"jwt":"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJVc2VyOjEiLCJleHAiOjE0ODMxODExNTgsImlhdCI6MTQ4MjMxNzE1OCwiaXNzIjoiRXhQdXNoZXJMaXRlIiwianRpIjoiNDZmOGYxZGUtOGQ3Yy00NGJhLWJhYTEtMWYyMjBhNDU4ZGE3IiwicGVtIjp7fSwic3ViIjoiVXNlcjoxIiwidHlwIjoiYWNjZXNzIn0.oScVwLC6hoOwdQ_b6xDiN2BITE8v98FoAA5s-0L7_qwMgSPUVzKLgjjjOEDxvXb3wYf4yFyE4kh1vrvbfE5HUA"}
 
 Now you can use the API endpoint like this:
 
-    curl -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJVc2VyVG9rZW46NDAzNmRlODItYzZhYi0xMWU2LTlhNTMtMjhjZmU5MWVmMTkzIiwiZXhwIjoxNDgzMTIyNzUxLCJpYXQiOjE0ODIyNTg3NTEsImlzcyI6IkV4UHVzaGVyTGl0ZSIsImp0aSI6Ijg5Y2NkZTIyLWNhMWMtNDJmZS1iZjhhLWYzNzEzOTRkMmRiNSIsInBlbSI6e30sInN1YiI6IlVzZXJUb2tlbjo0MDM2ZGU4Mi1jNmFiLTExZTYtOWE1My0yOGNmZTkxZWYxOTMiLCJ0eXAiOiJhY2Nlc3MifQ.niUkU7o9BE4JXEiIh1oNEm3wS0bet2a0URqL_B5rUgw_oLCTXP-xMDMMtEgNMnDYEDq_o_bcrvQGR7dnsqyWtw" http://localhost:4000/api/organizations/acme-inc/applications
+    curl -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJVc2VyOjEiLCJleHAiOjE0ODMxODExNTgsImlhdCI6MTQ4MjMxNzE1OCwiaXNzIjoiRXhQdXNoZXJMaXRlIiwianRpIjoiNDZmOGYxZGUtOGQ3Yy00NGJhLWJhYTEtMWYyMjBhNDU4ZGE3IiwicGVtIjp7fSwic3ViIjoiVXNlcjoxIiwidHlwIjoiYWNjZXNzIn0.oScVwLC6hoOwdQ_b6xDiN2BITE8v98FoAA5s-0L7_qwMgSPUVzKLgjjjOEDxvXb3wYf4yFyE4kh1vrvbfE5HUA" http://localhost:4000/api/organizations/acme-inc/applications
 
 Which in turn will give you the following response:
 
@@ -34,9 +34,15 @@ Which in turn will give you the following response:
 
 Now one can broadcast messages to a Channel like this:
 
-    curl -X POST -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJVc2VyVG9rZW46NDAzNmRlODItYzZhYi0xMWU2LTlhNTMtMjhjZmU5MWVmMTkzIiwiZXhwIjoxNDgzMTIyNzUxLCJpYXQiOjE0ODIyNTg3NTEsImlzcyI6IkV4UHVzaGVyTGl0ZSIsImp0aSI6Ijg5Y2NkZTIyLWNhMWMtNDJmZS1iZjhhLWYzNzEzOTRkMmRiNSIsInBlbSI6e30sInN1YiI6IlVzZXJUb2tlbjo0MDM2ZGU4Mi1jNmFiLTExZTYtOWE1My0yOGNmZTkxZWYxOTMiLCJ0eXAiOiJhY2Nlc3MifQ.niUkU7o9BE4JXEiIh1oNEm3wS0bet2a0URqL_B5rUgw_oLCTXP-xMDMMtEgNMnDYEDq_o_bcrvQGR7dnsqyWtw" http://localhost:4000/api/organizations/acme-inc/applications/40362820-c6ab-11e6-9492-28cfe91ef193/event\?message\=Hello%20World
+    curl -X POST -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6WyJyZWFkIiwid3JpdGUiXSwiYXBpIjpbInJlYWQiLCJ3cml0ZSJdLCJhdWQiOiJVc2VyOjEiLCJjaGFubmVsIjpbXSwiZXhwIjoxNDgyNTE3NDM4LCJpYXQiOjE0ODIzNDQ2MzgsImlzcyI6IkV4UHVzaGVyTGl0ZSIsImp0aSI6IjJmYzFjY2VhLTFjM2QtNDA4MS1hZGEwLWQwNGEzZGNkN2Q3ZSIsInBlbSI6e30sInN1YiI6IlVzZXI6MSIsInR5cCI6ImFjY2VzcyJ9.-BLPy-4uf4w6fy1-WOQhVN9GGC2mXFzvJzuuCpmTbg9kL_uERjJ_X4vnY7L1ANhisSRTKRSSB1P5ivTUOu510w" http://localhost:4000/api/organizations/acme-inc/applications/40362820-c6ab-11e6-9492-28cfe91ef193/event/new_message\?name\=John\&message\=Hello
 
-Check the homepage example for instruction on how to setup the Socket connection (also the `js/socket.js` example).
+You can also send messages directly to a user like this:
+
+    curl -X POST -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6WyJyZWFkIiwid3JpdGUiXSwiYXBpIjpbInJlYWQiLCJ3cml0ZSJdLCJhdWQiOiJVc2VyOjEiLCJjaGFubmVsIjpbXSwiZXhwIjoxNDgyNTE3NDM4LCJpYXQiOjE0ODIzNDQ2MzgsImlzcyI6IkV4UHVzaGVyTGl0ZSIsImp0aSI6IjJmYzFjY2VhLTFjM2QtNDA4MS1hZGEwLWQwNGEzZGNkN2Q3ZSIsInBlbSI6e30sInN1YiI6IlVzZXI6MSIsInR5cCI6ImFjY2VzcyJ9.-BLPy-4uf4w6fy1-WOQhVN9GGC2mXFzvJzuuCpmTbg9kL_uERjJ_X4vnY7L1ANhisSRTKRSSB1P5ivTUOu510w" http://localhost:4000/api/organizations/acme-inc/applications/40362820-c6ab-11e6-9492-28cfe91ef193/event/new_message\?name\=John\&message\=HelloWorld\&uid\=akitaonrails\&direct\=true
+
+The trick to receive direct events is to subscribe to 2 channels, a general broadcast channel and a single-user, uniquely identified channel.
+
+Check out the homepage example for instruction on how to setup the Socket connection (also the `js/socket.js` example).
 
 ### Development
 
