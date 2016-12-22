@@ -19,7 +19,7 @@ defmodule ExPusherLite.Mixfile do
   def application do
     [mod: {ExPusherLite, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :coherence]]
+                    :phoenix_ecto, :postgrex, :ex_admin, :coherence, :guardian, :exrm, :edeliver]]
   end
 
   # Specifies which paths to compile per environment.
@@ -41,7 +41,9 @@ defmodule ExPusherLite.Mixfile do
      {:ex_admin, github: "smpallen99/ex_admin"},
      {:coherence, "~> 0.3"},
      {:slugger, "~> 0.1.0"},
-     {:guardian, "~> 0.13.0"}]
+     {:guardian, "~> 0.13.0"},
+     {:edeliver, "~> 1.4.0"},
+     {:exrm, "~> 1.0.8"}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
