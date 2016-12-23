@@ -77,7 +77,7 @@ defmodule ExPusherLite.ApplicationController do
       |> Application.by_id_or_key(id)
       |> Repo.one!
 
-    room_name = if params["direct"] and params["uid"] do
+    room_name = if Map.has_key?(params, "direct") and Map.has_key?(params, "uid") do
         ExPusherLite.UserSocket.generate_id(application.app_key, params["uid"])
       else
         "lobby:#{application.app_key}"
