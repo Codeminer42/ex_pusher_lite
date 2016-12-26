@@ -70,7 +70,7 @@ defmodule ExPusherLite.Router do
 
     resources "/organizations", OrganizationController, except: [:new, :edit] do
       resources "/applications", ApplicationController, except: [:new, :edit] do
-        post "/event/:event", ApplicationController, :event
+        post "/event/:event", ApplicationController, :event, as: :event
       end
     end
   end

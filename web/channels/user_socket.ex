@@ -48,4 +48,5 @@ defmodule ExPusherLite.UserSocket do
   def id(socket), do: generate_id(socket.assigns.app_key, socket.assigns.uid)
 
   def generate_id(app_key, uid), do: "lobby:#{app_key}/uid:#{uid}"
+  def generate_id(app_key), do: "lobby:#{app_key}"
 end

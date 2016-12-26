@@ -5,6 +5,11 @@ defmodule ExPusherLite.ApplicationControllerTest do
   @valid_attrs %{name: "some content"}
   @invalid_attrs %{name: nil}
 
+  # Hack module to be able to access the websocket connection
+  defmodule EventChannelTest do
+    use ExPusherLite.ChannelCase
+  end
+
   setup %{conn: _conn} do
     conn = build_conn()
       |> guardian_sign_in
@@ -12,7 +17,7 @@ defmodule ExPusherLite.ApplicationControllerTest do
 
     %{assigns: %{test_user: test_user}} = conn
 
-    {:ok, conn: conn, organization: build_organization(test_user)}
+    {:ok, conn: conn, organization: build_organization(test_user), user: test_user}
   end
 
   test "lists all entries on index", %{conn: conn, organization: organization} do
@@ -66,5 +71,54 @@ defmodule ExPusherLite.ApplicationControllerTest do
     assert response(conn, 204)
     refute Repo.get(Application, application.id)
     assert Repo.aggregate(Ownership, :count, :id) == 0
+  end
+
+  test "broadcasts events to channel", %{conn: conn, organization: organization, user: user} do
+    application = build_application(organization)
+
+    room_name = ExPusherLite.UserSocket.generate_id(application.app_key)
+    params    = %{name: "John Wayne", message: "Hello World"}
+
+    EventChannelTest.connect_socket_and_join_channel(application.app_key, user.id, user.name)
+
+    ExPusherLite.Endpoint.subscribe(room_name)
+    post conn, organization_application_event_path(conn, :event, organization, application, "new_message"), params
+
+    assert_receive %Phoenix.Socket.Message{
+      event: "new_message",
+      payload: %{"message" => "Hello World", "name" => "John Wayne"},
+      topic: ^room_name}
+  end
+
+  test "broadcasts direct events to a user in his direct channel", %{conn: conn, organization: organization, user: user} do
+    application = build_application(organization)
+
+    room_name = ExPusherLite.UserSocket.generate_id(application.app_key, "Jane Doe")
+    params    = %{name: "John Wayne", message: "Hello World!!", direct: true, uid: "Jane Doe"}
+
+    EventChannelTest.connect_socket_and_join_channel(application.app_key, user.id, user.name)
+    EventChannelTest.connect_socket_and_join_channel(application.app_key, user.id, "Jane Doe")
+
+    ExPusherLite.Endpoint.subscribe(room_name)
+    post conn, organization_application_event_path(conn, :event, organization, application, "new_message"), params
+
+    assert_receive %Phoenix.Socket.Message{
+      event: "new_message",
+      payload: %{"message" => "Hello World!!", "name" => "John Wayne"},
+      topic: ^room_name}
+  end
+
+  test "fetches the presence tracking list", %{conn: conn, organization: organization, user: user} do
+    application = build_application(organization)
+
+    room_name = ExPusherLite.UserSocket.generate_id(application.app_key, "Jane Doe")
+
+    EventChannelTest.connect_socket_and_join_channel(application.app_key, user.id, user.name)
+    EventChannelTest.connect_socket_and_join_channel(application.app_key, user.id, "Jane Doe")
+
+    ExPusherLite.Endpoint.subscribe(room_name)
+    conn = post conn, organization_application_event_path(conn, :event, organization, application, "presence_list"), %{}
+    assert json_response(conn, 200)["data"]["John Wayne"]
+    assert json_response(conn, 200)["data"]["Jane Doe"]
   end
 end
