@@ -34,19 +34,18 @@ defmodule ExPusherLite.UserToken do
   end
 
   def jwt(user, params) do
-    {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :access, get_claims(user, params))
+    {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :access, get_perms(user, params))
     jwt
   end
 
-  defp get_claims(%User{} = user, params) do
-    api_perms     = unless params["channel"], do: [:read, :write], else: []
-    channel_perms = if params["channel"],     do: [:read, :write], else: []
-    admin_perms   = if user.is_root,          do: [:read, :write], else: []
-    ttl           = if params["channel"],     do: 5, else: 2 # days
-    Guardian.Claims.app_claims
-      |> Map.put("api", api_perms)
-      |> Map.put("channel", channel_perms)
-      |> Map.put("admin", admin_perms)
-      |> Guardian.Claims.ttl({ttl, :days})
+  defp get_perms(%User{} = user, _params) do
+    perms = %{ default: Guardian.Permissions.max }
+    query = from e in ExPusherLite.Enrollment,
+      where: e.user_id == ^user.id and e.is_admin == true
+    if Repo.one(query) do
+      Map.put(perms, :admin, Guardian.Permissions.max )
+    else
+      perms
+    end
   end
 end

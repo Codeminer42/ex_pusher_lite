@@ -60,9 +60,8 @@ config :guardian, Guardian,
   verify_issuer: true, # optional
   serializer: ExPusherLite.GuardianSerializer,
   permissions: %{
-    api: [:read, :write],
-    channel: [:read, :write],
-    admin: [:read, :write]
+    default: [:join_channel, :send_message],
+    admin: [:api_admin]
   }
 
 # Import environment specific config. This must remain at the bottom
