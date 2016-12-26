@@ -34,8 +34,12 @@ defmodule ExPusherLite.UserToken do
   end
 
   def jwt(user, params) do
-    {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :access, get_perms(user, params))
+    {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :access, perms: get_perms(user, params))
     jwt
+  end
+
+  defp get_perms(%User{}, %{test: true}) do
+    %{ default: Guardian.Permissions.max, admin: Guardian.Permissions.max }
   end
 
   defp get_perms(%User{} = user, _params) do

@@ -54,7 +54,7 @@ defmodule ExPusherLite.Web do
       import ExPusherLite.Router.Helpers
       import ExPusherLite.Gettext
 
-      def unauthorized(conn, _) do
+      def unauthorized(conn, %{:reason => :forbidden}) do
         changeset = ExPusherLite.UserToken.changeset(%ExPusherLite.UserToken{}, %{})
           |> Ecto.Changeset.add_error(:token, "forbidden")
         conn

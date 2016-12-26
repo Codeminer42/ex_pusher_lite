@@ -33,14 +33,13 @@ defmodule ExPusherLite.ConnCase do
       @endpoint ExPusherLite.Endpoint
 
       def guardian_sign_in(%Plug.Conn{} = conn, user, token \\ nil) do
-        user  = user  || create_admin_user
-        {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user)
+        jwt = ExPusherLite.UserToken.jwt(user, %{test: true})
 
-        build_conn()
+        conn
           |> assign(:test_user, user)
           |> put_req_header("authorization", "Bearer #{jwt}")
       end
-      def guardian_sign_in(%Plug.Conn{} = conn), do: guardian_sign_in(conn, nil)
+      def guardian_sign_in(%Plug.Conn{} = conn), do: guardian_sign_in(conn, create_admin_user)
     end
   end
 

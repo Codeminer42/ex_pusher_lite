@@ -3,6 +3,7 @@ defmodule ExPusherLite.UserSocket do
   import Guardian.Phoenix.Socket
 
   alias ExPusherLite.{Application, Repo}
+  alias Guardian.Permissions
 
   ## Channels
   channel "lobby:*", ExPusherLite.LobbyChannel
@@ -15,7 +16,8 @@ defmodule ExPusherLite.UserSocket do
   # to be a valid ApplicationToken associated with the desired Application
   # and send a valid JWT generated through the /api/sessions?channel=true API endpoint using a valid UserToken
   def connect(%{"app_key" => app_key, "guardian_token" => jwt, "unique_identifier" => uid}, socket) do
-    with {:ok, authed_socket, _} <- sign_in(socket, jwt),
+    with {:ok, authed_socket, params} <- sign_in(socket, jwt),
+         true                    <- params.claims |> Permissions.from_claims(:default) |> Permissions.any?([:join_channel], :default),
          _application            <- Repo.get_by!(Application, app_key: app_key),
          user                    <- Guardian.Phoenix.Socket.current_resource(authed_socket)
       do

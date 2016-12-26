@@ -4,7 +4,7 @@ defmodule ExPusherLite.OrganizationController do
   alias ExPusherLite.{Organization, Enrollment}
 
   plug Guardian.Plug.EnsureAuthenticated
-  plug Guardian.Plug.EnsurePermissions, [ handler: __MODULE__, admin: [:api_admin] ] when action in [:create, :update, :delete]
+  plug Guardian.Plug.EnsurePermissions, [ handler: __MODULE__, admin: [:api_admin] ] when action in [:update, :delete]
 
   def index(conn, _params, current_user, _claims) do
     organizations = current_user

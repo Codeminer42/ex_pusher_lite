@@ -4,7 +4,7 @@ defmodule ExPusherLite.ApplicationController do
   alias ExPusherLite.{Enrollment, Ownership, Application}
 
   plug Guardian.Plug.EnsureAuthenticated
-  plug Guardian.Plug.EnsurePermissions, [ handler: __MODULE__, admin: [:api_admin] ] when action in [:create, :update, :delete]
+  plug Guardian.Plug.EnsurePermissions, [ handler: __MODULE__, admin: [:api_admin] ]
   plug :check_organization_enrollment_and_admin_privileges
 
   def index(conn, %{"organization_id" => organization_id}, _current_user, _claims) do
