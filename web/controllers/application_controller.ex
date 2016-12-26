@@ -84,8 +84,13 @@ defmodule ExPusherLite.ApplicationController do
         "lobby:#{application.app_key}"
       end
 
-    ExPusherLite.Endpoint.broadcast_from(self(), room_name, event, parse_payload(params))
-    send_resp(conn, :no_content, "")
+    if event == "presence_list" do
+      conn
+        |> render("presence_list.json", list: ExPusherLite.Presence.list(room_name))
+    else
+      ExPusherLite.Endpoint.broadcast_from(self(), room_name, event, parse_payload(params))
+      send_resp(conn, :no_content, "")
+    end
   end
 
   defp check_organization_enrollment_and_admin_privileges(conn, _) do

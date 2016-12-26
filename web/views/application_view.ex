@@ -9,6 +9,10 @@ defmodule ExPusherLite.ApplicationView do
     %{data: render_one(application, ExPusherLite.ApplicationView, "application.json")}
   end
 
+  def render("presence_list.json", %{list: list}) do
+    %{data: list}
+  end
+
   def render("application.json", %{application: application}) do
     %{id: application.id,
       name: application.name,
