@@ -1,5 +1,4 @@
 USING_DISTILLERY=true
-SKIP_MIX_CLEAN=true
 
 # 1. Give a name to your app
 
@@ -41,9 +40,17 @@ LINK_VM_ARGS="/home/pusher/vm.args"
 # For *Phoenix* projects, symlink prod.secret.exs to our tmp source
 pre_erlang_get_and_update_deps() {
   local _prod_secret_path="/home/$USER/prod.secret.exs"
+  local _deps_path="/home/$USER/deps"
+  local _build="/home/$USER/_build"
+  local _node_modules="/home/$USER/node_modules"
   if [ "$TARGET_MIX_ENV" = "prod" ]; then
     __sync_remote "
       ln -sfn '$_prod_secret_path' '$BUILD_AT/config/prod.secret.exs'
+      ln -sfn '$_deps_path' '$BUILD_AT/deps'
+      ln -sfn '$_build' '$BUILD_AT/_build'
+      ln -sfn '$_node_modules' '$BUILD_AT/node_modules'
+
+      rm -Rf $BUILD_AT/_build/prod/rel/$APP
 
       cd '$BUILD_AT'
 
@@ -56,7 +63,7 @@ pre_erlang_get_and_update_deps() {
 
       brunch build --production
 
-      HOST=expusherlite.cm42.io PORT=8080 APP='$APP' MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD phoenix.digest $SILENCE
+      APP='$APP' MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD phoenix.digest $SILENCE
     "
   fi
 }
