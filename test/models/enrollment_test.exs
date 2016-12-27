@@ -45,4 +45,9 @@ defmodule ExPusherLite.EnrollmentTest do
     assert Enrollment.changeset(%Enrollment{}, enrollment) |> Repo.insert
     assert 1 == Enrollment.by_organization_id_or_slug_and_user(organization.slug, user.id) |> Repo.aggregate(:count, :id)
   end
+
+  test "find an admin enrollment by user id", %{user: user, enrollment: enrollment} do
+    assert Enrollment.changeset(%Enrollment{}, enrollment) |> Repo.insert
+    assert 1 == Enrollment.by_user_id(user.id) |> Enrollment.admin |> Repo.aggregate(:count, :id)
+  end
 end

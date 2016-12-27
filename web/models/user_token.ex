@@ -1,7 +1,7 @@
 defmodule ExPusherLite.UserToken do
   use ExPusherLite.Web, :model
 
-  alias ExPusherLite.User
+  alias ExPusherLite.{User, Enrollment}
 
   schema "user_tokens" do
     field :token, :string
@@ -43,13 +43,18 @@ defmodule ExPusherLite.UserToken do
   end
 
   defp get_perms(%User{} = user, _params) do
-    perms = %{ default: Guardian.Permissions.max }
-    query = from e in ExPusherLite.Enrollment,
-      where: e.user_id == ^user.id and e.is_admin == true
-    if Repo.one(query) do
+    if admin_enrollment(user.id) do
       Map.put(perms, :admin, Guardian.Permissions.max )
     else
       perms
     end
+  end
+
+  defp admin_enrollment(user_id) do
+    Enrollment.by_user_id(user_id) |> Enrollment.admin |> Repo.one
+  end
+
+  defp perms do
+    %{ default: Guardian.Permissions.max }
   end
 end

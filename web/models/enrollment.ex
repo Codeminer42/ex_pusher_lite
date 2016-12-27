@@ -27,12 +27,31 @@ defmodule ExPusherLite.Enrollment do
   def by_organization_id_or_slug_and_user(organization_id, user_id) do
     case Integer.parse(organization_id) do
       {id, _} ->
-        from e in __MODULE__,
-          where: e.user_id == ^user_id and e.organization_id == ^id and e.is_admin == true
+        by_user_id(user_id) |> by_organization_id(id) |> admin
       _ ->
-        from e in __MODULE__,
-          join: o in ExPusherLite.Organization, on: o.id == e.organization_id,
-          where: o.slug == ^organization_id and e.user_id == ^user_id and e.is_admin == true
+        by_user_id(user_id) |> by_organization_slug(organization_id) |> admin
     end
+  end
+
+  def by_organization_id(query \\ __MODULE__, id) do
+    from e in query,
+      where: e.organization_id == ^id
+  end
+
+  def by_organization_slug(query \\ __MODULE__, slug) do
+    from e in query,
+      join: o in ExPusherLite.Organization,
+      on: o.id == e.organization_id,
+      where: o.slug == ^slug
+  end
+
+  def by_user_id(query \\ __MODULE__, user_id) do
+    from e in query,
+      where: e.user_id == ^user_id
+  end
+
+  def admin(query \\ __MODULE__) do
+    from e in query,
+      where: e.is_admin == true
   end
 end
