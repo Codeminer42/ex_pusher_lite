@@ -11,6 +11,7 @@ cache:
   key: ex_pusher_lite
   paths:
     - .ci_cache/
+    - .ci_deps/
     - .ci_npm_cache/
 
 variables:
@@ -20,8 +21,10 @@ variables:
 
 before_script:
   - mkdir -p .ci_cache/
+  - mkdir -p .ci_deps/
   - mkdir -p _build/
   - cp -R .ci_cache/ _build/
+  - cp -R .ci_deps/ deps/
   - mix local.hex --force
   - mix deps.clean --unlock --unused
   - mix deps.get
@@ -32,6 +35,7 @@ before_script:
 
 after_script:
   - cp -R _build/ .ci_cache/
+  - cp -R deps/ .ci_deps/
 
 test:
   script:
