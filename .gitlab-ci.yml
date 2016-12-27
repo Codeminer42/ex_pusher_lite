@@ -12,7 +12,7 @@ cache:
   paths:
     - ._build/
     - deps/
-    - node_modules/
+    - .ci_npm_cache/
 
 variables:
   MIX_ENV: 'test'
