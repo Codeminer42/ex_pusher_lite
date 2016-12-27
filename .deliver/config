@@ -50,6 +50,8 @@ pre_erlang_get_and_update_deps() {
       ln -sfn '$_build' '$BUILD_AT/_build'
       ln -sfn '$_node_modules' '$BUILD_AT/node_modules'
 
+      alias find="find -L"
+
       rm -Rf $BUILD_AT/_build/prod/rel/$APP
 
       cd '$BUILD_AT'
