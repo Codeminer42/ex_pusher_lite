@@ -40,17 +40,20 @@ LINK_VM_ARGS="/home/pusher/vm.args"
 # For *Phoenix* projects, symlink prod.secret.exs to our tmp source
 pre_erlang_get_and_update_deps() {
   local _prod_secret_path="/home/$USER/prod.secret.exs"
+  local _deps_path="/home/$USER/deps"
+  local _build="/home/$USER/_build"
   if [ "$TARGET_MIX_ENV" = "prod" ]; then
     __sync_remote "
       ln -sfn '$_prod_secret_path' '$BUILD_AT/config/prod.secret.exs'
+      ln -sfn '$_deps_path' '$BUILD_AT/deps'
+      ln -sfn '$_build' '$BUILD_AT/_build'
 
       cd '$BUILD_AT'
 
       mkdir -p priv/static
 
+      mix deps.clean --unlock --unused
       mix deps.get
-
-      MIX_ENV=prod mix compile
 
       npm install
 
