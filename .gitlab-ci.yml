@@ -10,9 +10,9 @@ services:
 cache:
   key: ex_pusher_lite
   paths:
-    - .ci_cache/
-    - .ci_deps/
-    - .ci_npm_cache/
+    - ._build/
+    - deps/
+    - node_modules/
 
 variables:
   MIX_ENV: 'test'
@@ -20,11 +20,6 @@ variables:
   CI: '1'
 
 before_script:
-  - mkdir -p .ci_cache/
-  - mkdir -p .ci_deps/
-  - mkdir -p _build/
-  - cp -R .ci_cache/ _build/
-  - cp -R .ci_deps/ deps/
   - mix local.hex --force
   - mix deps.clean --unlock --unused
   - mix deps.get
@@ -32,10 +27,6 @@ before_script:
   - npm install --loglevel warn
   - cp -f config/test.exs.gitlab config/test.exs
   - MIX_ENV=test mix do ecto.create, ecto.migrate
-
-after_script:
-  - cp -R _build/ .ci_cache/
-  - cp -R deps/ .ci_deps/
 
 test:
   script:
