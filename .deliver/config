@@ -1,3 +1,5 @@
+USING_DISTILLERY=true
+
 # 1. Give a name to your app
 
 APP="ex_pusher_lite"
