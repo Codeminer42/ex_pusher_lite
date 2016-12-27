@@ -18,7 +18,7 @@ There is only 1 nested API endpoint of the format: `/api/organizations/:organiza
 
 In order to access this endpoint it is necessary to sign in using a valid UserToken.token:
 
-    curl -X POST --data "token=4036de82-c6ab-11e6-9a53-28cfe91ef193" http://localhost:4000/api/session
+    curl -X POST --data "token=4036de82-c6ab-11e6-9a53-28cfe91ef193" http://localhost:4000/api/sessions
 
 That will give you a response in the following format:
 
