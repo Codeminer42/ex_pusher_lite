@@ -43,15 +43,18 @@ defmodule ExPusherLite.UserToken do
   end
 
   defp get_perms(%User{} = user, _params) do
-    if admin_enrollment(user.id) do
-      Map.put(perms, :admin, Guardian.Permissions.max )
-    else
-      perms
-    end
+    find_admin_enrollment(user.id) |> put_permissions
   end
 
-  defp admin_enrollment(user_id) do
+  defp find_admin_enrollment(user_id) do
     Enrollment.by_user_id(user_id) |> Enrollment.admin |> Repo.one
+  end
+
+  defp put_permissions(%Enrollment{}) do
+    Map.put(perms, :admin, Guardian.Permissions.max )
+  end
+  defp put_permissions(_) do
+    perms
   end
 
   defp perms do
