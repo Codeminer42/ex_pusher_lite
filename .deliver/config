@@ -19,6 +19,8 @@ BUILD_HOST=$US
 BUILD_USER=$USER
 BUILD_AT="/tmp/edeliver/$APP/builds"
 
+RELEASE_DIR="$BUILD_AT/_build/prod/rel/$APP"
+
 # 5. Optionally specify the staging host
 
 # STAGING_HOSTS=$UK
@@ -49,8 +51,6 @@ pre_erlang_get_and_update_deps() {
       ln -sfn '$_deps_path' '$BUILD_AT/deps'
       ln -sfn '$_build' '$BUILD_AT/_build'
       ln -sfn '$_node_modules' '$BUILD_AT/node_modules'
-
-      alias find='find -L'
 
       rm -Rf $BUILD_AT/_build/prod/rel/$APP
 
