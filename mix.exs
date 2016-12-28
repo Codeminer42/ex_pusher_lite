@@ -19,7 +19,7 @@ defmodule ExPusherLite.Mixfile do
   def application do
     [mod: {ExPusherLite, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :ex_admin, :coherence, :guardian, :edeliver]]
+                    :phoenix_ecto, :postgrex, :ex_admin, :coherence, :guardian, :slugger, :edeliver]]
   end
 
   # Specifies which paths to compile per environment.
