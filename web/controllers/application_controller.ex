@@ -1,7 +1,7 @@
 defmodule ExPusherLite.ApplicationController do
   use ExPusherLite.Web, :controller
 
-  alias ExPusherLite.{Enrollment, Ownership, Application}
+  alias ExPusherLite.{Enrollment, Ownership, Application, Organization}
 
   plug Guardian.Plug.EnsureAuthenticated
   plug Guardian.Plug.EnsurePermissions, [ handler: __MODULE__, admin: [:api_admin] ]
@@ -15,7 +15,15 @@ defmodule ExPusherLite.ApplicationController do
     render(conn, "index.json", applications: applications)
   end
 
-  def create(conn, %{"organization_id" => organization_id, "application" => application_params}, _current_user, _claims) do
+  def create(conn, %{"organization_id" => organization_id, "application" => application_params}, current_user, claims) when is_binary(organization_id) do
+    id = case Integer.parse(organization_id) do
+           {id, ""} -> id
+           _        -> Repo.get_by(Organization, slug: organization_id).id
+         end
+    create(conn, %{"organization_id" => id, "application" => application_params}, current_user, claims)
+  end
+
+  def create(conn, %{"organization_id" => organization_id, "application" => application_params}, _current_user, _claims) when is_integer(organization_id) do
     changeset = Ownership.changeset(%Ownership{},
       %{organization_id: organization_id, application: application_params, is_owned: true})
 
