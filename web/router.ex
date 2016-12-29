@@ -32,12 +32,12 @@ defmodule ExPusherLite.Router do
     plug Guardian.Plug.LoadResource
   end
 
-  scope "/" do
+  scope "/", ExPusherLite do
     pipe_through [ :browser, :session ]
     coherence_routes
   end
 
-  scope "/" do
+  scope "/", ExPusherLite do
     pipe_through [ :browser, :protected ]
     coherence_routes :protected
   end
