@@ -14,6 +14,8 @@ defmodule ExPusherLite.Coherence.RegistrationController do
   require Logger
   alias Coherence.ControllerHelpers, as: Helpers
 
+  alias ExPusherLite.{User, UserToken, Enrollment, Organization, Repo}
+
   plug Coherence.RequireLogin when action in ~w(show edit update delete)a
   plug Coherence.ValidateOption, :registerable
   plug :scrub_params, "registration" when action in [:create, :update]
@@ -33,7 +35,8 @@ defmodule ExPusherLite.Coherence.RegistrationController do
   """
   def new(conn, _params) do
     user_schema = Config.user_schema
-    cs = Helpers.changeset(:registration, user_schema, user_schema.__struct__)
+    model = %User{enrollments: [%Enrollment{is_admin: "true", organization: %Organization{}}]}
+    cs = Helpers.changeset(:registration, user_schema, model)
     conn
     |> render(:new, email: "", changeset: cs)
   end
@@ -47,6 +50,7 @@ defmodule ExPusherLite.Coherence.RegistrationController do
   def create(conn, %{"registration" => registration_params} = params) do
     user_schema = Config.user_schema
     cs = Helpers.changeset(:registration, user_schema, user_schema.__struct__, registration_params)
+      |> Ecto.Changeset.put_assoc(:tokens, [%UserToken{token: UUID.uuid1()}])
     case Config.repo.insert(cs) do
       {:ok, user} ->
         conn
@@ -70,6 +74,8 @@ defmodule ExPusherLite.Coherence.RegistrationController do
   """
   def show(conn, _) do
     user = Coherence.current_user(conn)
+      |> Repo.preload(organizations: [:applications])
+      |> Repo.preload(:tokens)
     render(conn, "show.html", user: user)
   end
 

@@ -1,22 +1,78 @@
-<h2>Show account</h2>
-<ul>
-  <li>
-    <strong>Name:</strong>
-    <%= @user.name %>
-  </li>
-  <%= unless (login_field = Coherence.Config.login_field) == :email do %>
-    <li>
-      <strong><%= humanize login_field %></strong>
-      <%= Map.get(@user, login_field) %>
-    </li>
-  <% end %>
+<div class="panel panel-default">
+  <div class="panel-heading">Account</div>
+  <div class="panel-body">
+    <ul class="list-group">
+      <li class="list-group-item">
+        <strong>Name:</strong>
+        <%= @user.name %>
+      </li>
+      <%= unless (login_field = Coherence.Config.login_field) == :email do %>
+        <li class="list-group-item">
+          <strong><%= humanize login_field %></strong>
+          <%= Map.get(@user, login_field) %>
+        </li>
+      <% end %>
 
-  <li>
-    <strong>Email:</strong>
-    <%= @user.email %>
-  </li>
+      <li class="list-group-item">
+        <strong>Email:</strong>
+        <%= @user.email %>
+      </li>
 
-</ul>
+    </ul>
 
-<%= link "Edit", to: registration_path(@conn, :edit) %> |
-<%= link "Delete", to: registration_path(@conn, :delete), method: :delete, data: [confirm: "Are you sure?"] %>
+    <div class="btn-group" role="group">
+      <div class="btn-group" role="group">
+        <%= link "Edit", to: registration_path(@conn, :edit), class: "btn btn-primary" %>
+      </div>
+      <div class="btn-group" role="group">
+        <%= link "Delete", to: registration_path(@conn, :delete), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger" %>
+      </div>
+      <div class="btn-group" role="group">
+        <%= link "Cancel", to: "/", class: "btn" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Secret Tokens</div>
+  <div class="panel-body">
+  <ul class="list-group">
+    <%= for token <- @user.tokens do %>
+      <li class="list-group-item"><%= token.token %><%= if token.invalidated_at, do: " (invalid)", else: "" %></li>
+    <% end %>
+  </ul>
+  </div>
+</div>
+
+<%= for organization <- @user.organizations do %>
+  <div class="panel panel-default">
+    <div class="panel-heading">Organization: <%= organization.name %></div>
+    <div class="panel-body">
+      <%= if Enum.count(organization.applications) == 0 do %>
+      (No applications)
+      <% else %>
+        <table class="table">
+          <thead>
+            <tr>
+              <td>Application Name</td>
+              <td>Application Public Token</td>
+              <td>Archived At</td>
+            </tr>
+          </thead>
+          <tbody>
+          <%= for application <- organization.applications do %>
+            <tr>
+              <td><%= application.name %></td>
+              <td><%= application.app_key %></td>
+              <td><%= application.archived_at || "-" %></td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+

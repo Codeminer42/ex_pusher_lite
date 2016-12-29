@@ -15,7 +15,16 @@ defmodule ExPusherLite.User do
     has_many :organizations, through: [:enrollments, :organization]
   end
 
-  def changeset(model, params \\ %{}) do
+  def changeset(model, %{"enrollments" => _} = params) do
+    create_changeset(model, params)
+      |> cast_assoc(:enrollments)
+  end
+
+  def changeset(model, params) do
+    create_changeset(model, params)
+  end
+
+  defp create_changeset(model, params) do
     model
     |> cast(params, [:name, :email, :is_root] ++ coherence_fields)
     |> validate_required([:name, :email])

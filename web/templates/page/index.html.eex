@@ -2,28 +2,13 @@
 <div class="jumbotron">
   <div class="container">
     <h1 class="display-3">Welcome to ExPusherLite!</h1>
+    <br />
     <p>This is a minimal Pusher.com clone made in Elixir intended to be used as the real-time communications component for web applications built in any language that are in need for Web Sockets support.</p>
-    <p>There is no sign up process yet, you need to ask the Administrator to create your Organization and User.</p>
-    <p><a class="btn btn-primary btn-lg" href="https://gitlab42.com/akitaonrails/ex_pusher_lite" role="button">Learn more &raquo;</a></p>
-  </div>
-</div>
-
-<div class="container">
-  <hr />
-  <h2>Chat Demo - First Channels Test</h2>
-
-  <%= form_tag page_path(@conn, :create), method: "post" do %>
-
-  <div class='row form-group'>
-    <div class='col-md-6'>
-      <input type='text' id='name' name='name' class='form-control' placeholder='Name' />
-    </div>
-    <div class='col-md-6'>
-      <button class="btn btn-primary" type="submit">Submit</button>
-    </div>
-  </div>
-
-  <% end %>
-
+    <br />
+    <%= if Coherence.logged_in?(@conn) do %>
+      <p><a class="btn btn-primary btn-lg" href="<%= registration_path(@conn, :show) %>" role="button">Check out your account!</a></p>
+    <% else %>
+      <p><a class="btn btn-primary btn-lg" href="<%= registration_path(@conn, :new) %>" role="button">Sign Up Now!</a></p>
+    <% end %>
   </div>
 </div>

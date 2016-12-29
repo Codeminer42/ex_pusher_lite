@@ -38,6 +38,25 @@
     <%= error_tag f, :password_confirmation %>
   </div>
 
+  <%= if @label == "Register" do %>
+    <%= inputs_for f, :enrollments, fn e -> %>
+      <%= hidden_input e, :is_admin %>
+      <div class="panel panel-default">
+        <div class="panel-heading">Your Organization</div>
+        <div class="panel-body">
+        <%= inputs_for e, :organization, fn o-> %>
+          <div class="form-group">
+            <%= required_label o, :name, class: "control-label" %>
+            <%= text_input o, :name, class: "form-control", required: "" %>
+            <%= error_tag o, :name %>
+          </div>
+        <% end %>
+        <small>If your Organization already exists, ask your Administrator to Enroll you instead of registering a new one.</small>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
   <div class="form-group">
     <%= submit @label, class: "btn btn-primary" %>
     <%= link "Cancel", to: Coherence.Config.logged_out_url("/"), class: "btn" %>
