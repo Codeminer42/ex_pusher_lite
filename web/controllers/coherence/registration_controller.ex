@@ -14,7 +14,7 @@ defmodule ExPusherLite.Coherence.RegistrationController do
   require Logger
   alias Coherence.ControllerHelpers, as: Helpers
 
-  alias ExPusherLite.{User, UserToken, Enrollment, Organization, Repo}
+  alias ExPusherLite.{User, UserToken, Enrollment, Organization, Application, Repo}
 
   plug Coherence.RequireLogin when action in ~w(show edit update delete)a
   plug Coherence.ValidateOption, :registerable
@@ -76,7 +76,10 @@ defmodule ExPusherLite.Coherence.RegistrationController do
     user = Coherence.current_user(conn)
       |> Repo.preload(organizations: [:applications])
       |> Repo.preload(:tokens)
-    render(conn, "show.html", user: user)
+    conn
+    |> assign(:guardian_jwt, UserToken.jwt(user, %{}))
+    |> assign(:application, Application.changeset(%Application{}, %{}))
+    |> render("show.html", user: user)
   end
 
   @doc """
