@@ -1,0 +1,16 @@
+<h1>Ex Pusher Lite - Rails Integration Example</h1>
+
+<script type="text/javascript" charset="utf-8">
+  window.guardian_token = "<%= @guardian_token %>";
+  window.org_id = "<%= Rails.application.secrets.org_id %>"
+  window.app_key = "<%= Rails.application.secrets.app_key %>";
+  window.pusher_host = "<%= Rails.application.secrets.pusher_host %>";
+</script>
+
+<div id="chat" class="fixedContainer">
+</div>
+
+<input type="text" name="name" id="name" value="" placeholder="Name"/>
+<input type="text" name="message" id="message" value="" placeholder="Message"/>
+<input type="checkbox" name="channel" id="channel" value="api"/>
+<label for="channel">send through API</label>
