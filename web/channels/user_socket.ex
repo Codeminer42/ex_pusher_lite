@@ -9,8 +9,8 @@ defmodule ExPusherLite.UserSocket do
   channel "lobby:*", ExPusherLite.LobbyChannel
 
   ## Transports
-  transport :websocket, Phoenix.Transports.WebSocket
-  # transport :longpoll, Phoenix.Transports.LongPoll
+  transport :websocket, Phoenix.Transports.WebSocket, check_origin: false
+  transport :longpoll, Phoenix.Transports.LongPoll, check_origin: false
 
   # The client-side Socket must set the token parameter
   # to be a valid ApplicationToken associated with the desired Application
