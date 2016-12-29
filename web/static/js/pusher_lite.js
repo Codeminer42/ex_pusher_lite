@@ -10,23 +10,24 @@ const socketParameters = (pusher) => {
 }
 
 const connectSockets = (pusher) => {
-  pusher.socket = new Socket(`http://${pusher.host}/socket`, {params: pusher.socketParameters()})
+  const url = `ws://${pusher.host}/socket`
+  pusher.socket = new Socket(url, {params: socketParameters(pusher)})
   pusher.socket.connect()
 }
 
 const setChannels = (pusher) => {
   pusher.publicChannel = pusher.socket.channel(`lobby:${pusher.appKey}`, {})
-  pusher.privateChannel = socket.channel(`lobby:${pusher.appKey}/uid:${pusher.uniqueUserId}`, {})
+  pusher.privateChannel = pusher.socket.channel(`lobby:${pusher.appKey}/uid:${pusher.uniqueUserId}`, {})
 }
 
 const bindEventsToChannels = (pusher) => {
-  for(let [event, callback] of pusher.publicEvents) {
+  for(let [event, callback] of Object.entries(pusher.publicEvents)) {
     pusher.publicChannel.on(event, payload => {
       callback(payload)
     })
   }
 
-  for(let [event, callback] of pusher.privateEvents) {
+  for(let [event, callback] of Object.entries(pusher.privateEvents)) {
     pusher.privateChannel.on(event, payload => {
       callback(payload)
     })
@@ -35,15 +36,15 @@ const bindEventsToChannels = (pusher) => {
 
 const joinChannels = (pusher) => {
   pusher.publicChannel.join()
-    .receive("ok", resp => { console.log("Successfully joined Public Channel", resp) })
-    .receive("error", resp => { console.log("Unable to join Public Channel", resp) })
+    .receive("ok", resp => { pusher.socketSuccess(resp) })
+    .receive("error", resp => { pusher.socketError(resp) })
 
   pusher.privateChannel.join()
-    .receive("ok", resp => { console.log("Successfully joined Private Channel", resp) })
-    .receive("error", resp => { console.log("Unable to join Private Channel", resp) })
+    .receive("ok", resp => { pusher.socketSuccess(resp) })
+    .receive("error", resp => { pusher.socketError(resp) })
 }
 
-export class PusherLite {
+class PusherLite {
   constructor(host, appKey, jwt, uniqueUserId, publicEvents, privateEvents) {
     this.host = host
     this.appKey = appKey
@@ -52,6 +53,17 @@ export class PusherLite {
     this.publicEvents = publicEvents || {}
     this.privateEvents = privateEvents || {}
     this.connected = false
+
+    this.socketSuccess = (resp) => { console.log("Socket joined successfully", resp) }
+    this.socketError = (resp) => { console.log("Error joining Socket", resp) }
+  }
+
+  onSocketSuccess(callback) {
+    this.socketSuccess = callback;
+  }
+
+  onSocketError(callback) {
+    this.socketError = callback;
   }
 
   connect() {
@@ -62,13 +74,15 @@ export class PusherLite {
     this.connected = true
   }
 
-  sendPublic(event, payload) {
+  trigger(event, payload) {
     if (!this.connected) return;
     this.publicChannel.push(event, payload)
   }
 
-  sendPrivate(event, payload, destinationId) {
+  triggerDirect(event, payload, destinationId) {
     if (!this.connected) return;
     this.publicChannel.push("direct", { uid: destinationId, event: event, payload: payload })
   }
 }
+
+export { PusherLite }

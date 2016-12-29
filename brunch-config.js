@@ -7,7 +7,7 @@ exports.config = {
          "js/ex_admin_common.js": ["web/static/vendor/ex_admin_common.js"],
          "js/admin_lte2.js": ["web/static/vendor/admin_lte2.js"],
          "js/jquery.min.js": ["web/static/vendor/jquery.min.js"],
-         "js/pusher.js" : ["deps/phoenix/priv/static/phoenix.js", "web/static/js/pusher_lite.js"]
+         "js/pusher.js" : ["web/static/js/pusher_lite.js", /(node_modules)/]
        }
 
       // To use a separate vendor.js bundle, specify two files path
