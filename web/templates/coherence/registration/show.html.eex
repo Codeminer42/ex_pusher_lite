@@ -47,7 +47,7 @@
 
 <%= for organization <- @user.organizations do %>
   <div class="panel panel-default">
-    <div class="panel-heading">Organization: <%= organization.name %></div>
+    <div class="panel-heading"><%= organization.name %> (<%= organization.slug %>)</div>
     <div class="panel-body">
       <%= if Enum.count(organization.applications) == 0 do %>
       (No applications)
