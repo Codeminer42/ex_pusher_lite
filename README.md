@@ -2,7 +2,7 @@
 
 This is a minimal Pusher.com clone made in Elixir intended to be used as the real-time communications component for web applications built in any language that are in need for Web Sockets support.
 
-### Architecture
+### Server-Side Architecture
 
 You have 3 main resources: Users, Organizations and Applications.
 
@@ -18,31 +18,70 @@ There is only 1 nested API endpoint of the format: `/api/organizations/:organiza
 
 In order to access this endpoint it is necessary to sign in using a valid UserToken.token:
 
-    curl -X POST --data "token=4036de82-c6ab-11e6-9a53-28cfe91ef193" http://localhost:4000/api/sessions
+    curl -X POST --data "token=4036...f193" http://localhost:4000/api/sessions
 
 That will give you a response in the following format:
 
-    {"jwt":"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJVc2VyOjEiLCJleHAiOjE0ODMxODExNTgsImlhdCI6MTQ4MjMxNzE1OCwiaXNzIjoiRXhQdXNoZXJMaXRlIiwianRpIjoiNDZmOGYxZGUtOGQ3Yy00NGJhLWJhYTEtMWYyMjBhNDU4ZGE3IiwicGVtIjp7fSwic3ViIjoiVXNlcjoxIiwidHlwIjoiYWNjZXNzIn0.oScVwLC6hoOwdQ_b6xDiN2BITE8v98FoAA5s-0L7_qwMgSPUVzKLgjjjOEDxvXb3wYf4yFyE4kh1vrvbfE5HUA"}
+    {"jwt":"eyJh...5HUA"}
 
 Now you can use the API endpoint like this:
 
-    curl -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJVc2VyOjEiLCJleHAiOjE0ODMxODExNTgsImlhdCI6MTQ4MjMxNzE1OCwiaXNzIjoiRXhQdXNoZXJMaXRlIiwianRpIjoiNDZmOGYxZGUtOGQ3Yy00NGJhLWJhYTEtMWYyMjBhNDU4ZGE3IiwicGVtIjp7fSwic3ViIjoiVXNlcjoxIiwidHlwIjoiYWNjZXNzIn0.oScVwLC6hoOwdQ_b6xDiN2BITE8v98FoAA5s-0L7_qwMgSPUVzKLgjjjOEDxvXb3wYf4yFyE4kh1vrvbfE5HUA" http://localhost:4000/api/organizations/acme-inc/applications
+    curl -H "Authorization: Bearer eyJh...5HUA" http://localhost:4000/api/organizations/acme-inc/applications
 
 Which in turn will give you the following response:
 
-    {"data":[{"name":"Test App","id":1,"archived_at":null,"app_secret":"40362ea6-c6ab-11e6-94dd-28cfe91ef193","app_key":"40362820-c6ab-11e6-9492-28cfe91ef193"}]}
+    {"data":[{"name":"Test App","id":1,"archived_at":null,"app_secret":"4036...f193","app_key":"4036...f193"}]}
 
 Now one can broadcast messages to a Channel like this:
 
-    curl -X POST -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6WyJyZWFkIiwid3JpdGUiXSwiYXBpIjpbInJlYWQiLCJ3cml0ZSJdLCJhdWQiOiJVc2VyOjEiLCJjaGFubmVsIjpbXSwiZXhwIjoxNDgyNTE3NDM4LCJpYXQiOjE0ODIzNDQ2MzgsImlzcyI6IkV4UHVzaGVyTGl0ZSIsImp0aSI6IjJmYzFjY2VhLTFjM2QtNDA4MS1hZGEwLWQwNGEzZGNkN2Q3ZSIsInBlbSI6e30sInN1YiI6IlVzZXI6MSIsInR5cCI6ImFjY2VzcyJ9.-BLPy-4uf4w6fy1-WOQhVN9GGC2mXFzvJzuuCpmTbg9kL_uERjJ_X4vnY7L1ANhisSRTKRSSB1P5ivTUOu510w" http://localhost:4000/api/organizations/acme-inc/applications/40362820-c6ab-11e6-9492-28cfe91ef193/event/new_message\?name\=John\&message\=Hello
+    curl -X POST -H "Authorization: Bearer eyJh...u510w" http://localhost:4000/api/organizations/acme-inc/applications/4036...f193/event/new_message\?name\=John\&message\=Hello
 
 You can also send messages directly to a user like this:
 
-    curl -X POST -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6WyJyZWFkIiwid3JpdGUiXSwiYXBpIjpbInJlYWQiLCJ3cml0ZSJdLCJhdWQiOiJVc2VyOjEiLCJjaGFubmVsIjpbXSwiZXhwIjoxNDgyNTE3NDM4LCJpYXQiOjE0ODIzNDQ2MzgsImlzcyI6IkV4UHVzaGVyTGl0ZSIsImp0aSI6IjJmYzFjY2VhLTFjM2QtNDA4MS1hZGEwLWQwNGEzZGNkN2Q3ZSIsInBlbSI6e30sInN1YiI6IlVzZXI6MSIsInR5cCI6ImFjY2VzcyJ9.-BLPy-4uf4w6fy1-WOQhVN9GGC2mXFzvJzuuCpmTbg9kL_uERjJ_X4vnY7L1ANhisSRTKRSSB1P5ivTUOu510w" http://localhost:4000/api/organizations/acme-inc/applications/40362820-c6ab-11e6-9492-28cfe91ef193/event/new_message\?name\=John\&message\=HelloWorld\&uid\=akitaonrails\&direct\=true
+    curl -X POST -H "Authorization: Bearer eyJh...510w" http://localhost:4000/api/organizations/acme-inc/applications/4036...f193/event/new_message\?name\=John\&message\=HelloWorld\&uid\=akitaonrails\&direct\=true
 
 The trick to receive direct events is to subscribe to 2 channels, a general broadcast channel and a single-user, uniquely identified channel.
 
-Check out the homepage example for instruction on how to setup the Socket connection (also the `js/socket.js` example).
+Check out the homepage example for instruction on how to setup the Socket connection (also the `js/pusher_lite.js` example).
+
+### Client-Side Usage
+
+From your application you must import the "/js/pusher.js":
+
+    <script src="http://expusherlite.cm42.io/js/pusher.js" />
+
+Now you can use it like this (ES6):
+
+    import {PusherLite} from "pusher"
+
+    const publicEvents = {
+      "new_message", payload => {
+        // from the main channel (for public messages)
+        console.log(payload.name)
+        console.log(payload.message)
+      }
+    }
+
+    const privateMessages = {
+      "direct_message", payload => {
+        // from the direct channel (for private messages)
+        console.log(payload.name)
+        console.log(payload.message)
+      }
+    }
+
+    let pusher = new PusherLite("4036...f193", "eyJh...510w", "user_unique_identifier", publicEvents, privateEvents)
+
+    pusher.connect()
+
+Now you can send messages using the APIs as described in the previous sections. This will give you a chance to store or filter the messages before broadcasting into the channels.
+
+Or you can allow unfiltered messages directly down the socket like this:
+
+    pusher.sendPublic("new_message", { "name" : "John", "message" : "Hello" })
+
+    // private message from John only to Jane
+    pusher.sendPrivate("new_message, { "name" : John", "message" : "Hello" }, "Jane")
 
 ### Development
 
