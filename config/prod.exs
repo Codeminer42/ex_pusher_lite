@@ -14,7 +14,8 @@ use Mix.Config
 config :ex_pusher_lite, ExPusherLite.Endpoint,
   http: [port: 8080],
   url: [host: "expusherlite.cm42.io", port: 80],
-  cache_static_manifest: "priv/static/manifest.json"
+  cache_static_manifest: "priv/static/manifest.json",
+  check_origin: false
 
 # Do not print debug messages in production
 config :logger, level: :info
