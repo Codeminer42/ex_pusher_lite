@@ -1,0 +1,4 @@
+-name ${NODE_NAME}
+-setcookie ${COOKIE}
+-kernel inet_dist_listen_min 9100 inet_dist_listen_max 9155
+-config /home/pusher/ex_pusher_lite.config
