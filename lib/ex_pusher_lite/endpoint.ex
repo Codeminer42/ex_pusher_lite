@@ -38,7 +38,7 @@ defmodule ExPusherLite.Endpoint do
     key: "_ex_pusher_lite_key",
     signing_salt: "QONJAibK"
 
-  plug Corsica, origins: "*", allow_headers: ["Authorization"]
+  plug Corsica, origins: "*", allow_headers: ["Authorization", "Origin", "Sec-WebSocket-Key", "Sec-WebSocket-Version", "Sec-WebSocket-Protocol", "Host", "Connection", "Upgrade", "Content-Type", "Sec-WebSocket-Accept", "Sec-WebSocket-Protocol"]
 
   plug ExPusherLite.Router
 end
