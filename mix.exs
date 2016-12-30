@@ -44,7 +44,8 @@ defmodule ExPusherLite.Mixfile do
      {:guardian, "~> 0.13.0"},
      {:edeliver, "~> 1.4.0"},
      {:distillery, "~> 1.0"},
-     {:corsica, "~> 0.5"},]
+     {:corsica, "~> 0.5"},
+     {:credo, "~> 0.3", only: [:dev, :test]}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
