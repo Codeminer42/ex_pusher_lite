@@ -16,19 +16,16 @@
 //= require_tree .
 
 $(document).ready(function() {
-  var PusherLite = require("web/static/js/pusher_lite").PusherLite;
+  var PusherLite = require("pusher_lite").default;
 
-  // event coming from the channel
-  var publicEvents = {
-    "new_message" : function(payload) {
-      var chat = $("#chat")
-      chat.append("<p><strong>" + payload.name + "</strong> " + payload.message + "</p>");
-      chat.scrollTop(chat.prop("scrollHeight"));
-    }
-  }
+  var pusher = new PusherLite(window.pusher_host, window.app_key, window.guardian_token, "robot")
 
-  var pusher = new PusherLite(window.pusher_host,
-    window.app_key, window.guardian_token, "robot", publicEvents, {})
+  pusher.listenTo("new_message", function(payload) {
+    var chat = $("#chat")
+    chat.append("<p><strong>" + payload.name + "</strong> " + payload.message + "</p>");
+    chat.scrollTop(chat.prop("scrollHeight"));
+  })
+
   pusher.connect();
 
   var message = $("#message");
@@ -52,6 +49,7 @@ $(document).ready(function() {
             'message' : message.val()
           },
           success : function(response) {
+            console.log("sent through API successfully");
           },
           error : function(xhr, status, error) {
             console.log(error);
