@@ -21,7 +21,8 @@ $(document).ready(function() {
   var pusher = new PusherLite(window.app_key, {
     host: window.pusher_host,
     jwt: window.guardian_token,
-    uniqueUserId: "robot" })
+    uniqueUserId: "robot",
+    ssl: true})
 
   var publicChannel = pusher.subscribe("general")
 
