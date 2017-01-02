@@ -20,6 +20,7 @@ environment :dev do
 end
 
 environment :prod do
+  plugin Releases.Plugin.LinkConfig
   set include_erts: true
   set include_src: false
   set cookie: :"4r*S=kf53w4V1w@$=;??/]hYz>xUh81_9TFHhMx:^DBu1<o<kjYrRZ2i6|QZb}09"
