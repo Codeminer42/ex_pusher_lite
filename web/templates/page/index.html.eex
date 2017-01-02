@@ -7,7 +7,7 @@
     <p>After you sign up and create a new Application, you can create an authentication token from the server side like this (Ruby example):</p>
     <pre>
       <code>
-      uri = URI.parse("http://expusherlite.cm42.io/api/sessions")
+      uri = URI.parse("https://expusherlite.cm42.io/api/sessions")
       response = Net::HTTP.post_form(uri, {"token" => "your secret user token"})
       @guardian_token = JSON.parse(response.body)["jwt"]
       </code>
@@ -16,13 +16,14 @@
     <pre>
       <code>
       // in the HTML don't forget to import the required JS
-      // &lt;script src="http://expusherlite.cm42.io/js/pusher.js"&gt;&lt;/script&gt;
+      // &lt;script src="https://expusherlite.cm42.io/js/pusher.js"&gt;&lt;/script&gt;
 
       var PusherLite = require("pusher_lite").default;
 
       var pusher = new PusherLite("your new application public key", {
         jwt: "JWT session created through the /api/sessions API above",
-        uniqueUserId: "unique identifier for your user" })
+        uniqueUserId: "unique identifier for your user",
+        ssl: true})
 
       var publicChannel = pusher.subscribe("general"); // any topic name
 

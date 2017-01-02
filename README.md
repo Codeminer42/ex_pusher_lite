@@ -42,15 +42,16 @@ Check out the homepage example for instruction on how to setup the Socket connec
 
 From your application you must import the "/js/pusher.js":
 
-    <script src="http://expusherlite.cm42.io/js/pusher.js" />
+    <script src="https://expusherlite.cm42.io/js/pusher.js" />
 
-Now you can use it like this (ES6):
+Now you can use it like this (ES5):
 
     var PusherLite = require("pusher_lite").default;
 
     var pusher = new PusherLite("4036...f193", {
       jwt: "eyJh...510w",
-      uniqueUserId: "user_unique_identifier" })
+      uniqueUserId: "user_unique_identifier",
+      ssl: true })
 
     var publicChannel = pusher.subscribe("general")
 
@@ -79,7 +80,7 @@ To start your Phoenix app:
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
+Ready to run in production? Please [check our deployment guides](https://www.phoenixframework.org/docs/deployment).
 
 To collaborate just follow Pull Request best practices, add tests.
 
