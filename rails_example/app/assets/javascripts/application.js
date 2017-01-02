@@ -77,5 +77,5 @@ function sendAPI(payload) {
 }
 
 function makeURL(event) {
-  return "http://" + window.pusher_host + "/api/organizations/" + window.org_id + "/applications/" + window.app_key + "/event/" + event;
+  return "https://" + window.pusher_host + "/api/organizations/" + window.org_id + "/applications/" + window.app_key + "/event/" + event;
 }
