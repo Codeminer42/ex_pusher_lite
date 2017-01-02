@@ -9,10 +9,6 @@ const socketParameters = (pusher) => {
   return {app_key: pusher.appKey, guardian_token: pusher.jwt, unique_identifier: pusher.uniqueUserId}
 }
 
-const connectSockets = (pusher, ssl = false) => {
-
-}
-
 const defaultOnJoin = (id, current, newPres) => {
   if(!current){
     console.log("user has entered for the first time", newPres)

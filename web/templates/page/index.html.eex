@@ -12,7 +12,7 @@
       @guardian_token = JSON.parse(response.body)["jwt"]
       </code>
     </pre>
-    <p>And with the authenticated JWT token you can pass it to your application's client-side Javascript like this:</p>
+    <p>You can cache the JWT for up to 2 days. Now you can pass it to your application's client-side Javascript like this:</p>
     <pre>
       <code>
       // in the HTML don't forget to import the required JS
