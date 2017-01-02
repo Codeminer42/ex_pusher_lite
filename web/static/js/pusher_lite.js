@@ -9,42 +9,8 @@ const socketParameters = (pusher) => {
   return {app_key: pusher.appKey, guardian_token: pusher.jwt, unique_identifier: pusher.uniqueUserId}
 }
 
-const connectSockets = (pusher) => {
-  const url = `ws://${pusher.host}/socket`
-  let options = pusher.socketOptions;
-  options["params"] = socketParameters(pusher)
+const connectSockets = (pusher, ssl = false) => {
 
-  pusher.socket = new Socket(url, options)
-  pusher.socket.connect()
-}
-
-const setChannels = (pusher) => {
-  pusher.publicChannel = pusher.socket.channel(`lobby:${pusher.appKey}`, {})
-  pusher.privateChannel = pusher.socket.channel(`lobby:${pusher.appKey}/uid:${pusher.uniqueUserId}`, {})
-}
-
-const bindEventsToChannels = (pusher) => {
-  for(let [event, callback] of Object.entries(pusher.publicEvents)) {
-    pusher.publicChannel.on(event, payload => {
-      callback(payload)
-    })
-  }
-
-  for(let [event, callback] of Object.entries(pusher.privateEvents)) {
-    pusher.privateChannel.on(event, payload => {
-      callback(payload)
-    })
-  }
-}
-
-const joinChannels = (pusher) => {
-  pusher.publicChannel.join()
-    .receive("ok", resp => { pusher.socketSuccess(resp) })
-    .receive("error", resp => { pusher.socketError(resp) })
-
-  pusher.privateChannel.join()
-    .receive("ok", resp => { pusher.socketSuccess(resp) })
-    .receive("error", resp => { pusher.socketError(resp) })
 }
 
 const defaultOnJoin = (id, current, newPres) => {
@@ -63,89 +29,87 @@ const defaultOnLeave = (id, current, leftPres) => {
   }
 }
 
-const defaultSocketSuccess = (resp) => { console.log("Socket joined successfully", resp) }
-const defaultSocketError = (resp) => { console.log("Error joining Socket", resp) }
+const defaultSocketSuccess = (resp) => {
+  console.log("Socket joined successfully", resp)
+}
+
+const defaultSocketError = (resp) => {
+  console.log("Error joining Socket", resp)
+}
+
+class PusherLiteChannel {
+  constructor(topic, pusher, opts = {}) {
+    this.topic    = topic;
+    this.pusher   = pusher;
+    this.channel  = pusher.socket.channel(`lobby:${pusher.appKey}:${topic}`);
+    this.presence = {};
+
+    if (opts.onJoin)  { this.onJoin  = opts.onJoin }  else { this.onJoin  = defaultOnJoin }
+    if (opts.onLeave) { this.onLeave = opts.onLeave } else { this.onLeave = defaultOnLeave }
+
+    if (opts.onSuccess) { this.onSuccess = opts.onSuccess } else { this.onSuccess = defaultSocketSuccess }
+    if (opts.onError)   { this.onError   = opts.onError }   else { this.onError   = defaultSocketError }
+
+    this.channel.on("presence_state", state => { this.handle("presence_state", state) } )
+    this.channel.on("presence_diff", diff => { this.handle("presence_diff", diff) } )
+  }
+
+  getTopic() { return this.topic }
+
+  getPresence() { return this.presence }
+
+  bind(event, callback) {
+    this.channel.on(event, callback);
+  }
+
+  join(onSuccess, onError) {
+    this.channel.join()
+      .receive("ok", resp => { this.onSuccess(resp) })
+      .receive("error", resp => { this.onError(resp) })
+  }
+
+  trigger(event, payload) {
+    this.channel.push(event, payload)
+  }
+
+  handle(event, state) {
+    this.presence = Presence.syncState(this.presence, state, this.onJoin, this.onLeave)
+    if(event == "presence_state" && this.pusher.presenceState)
+      pusher.presenceState(state)
+    if(event == "presence_diff" && this.pusher.presenceDiff)
+      pusher.presenceDiff(state)
+  }
+}
 
 // PusherLite(hostname, application_key, jwt_token, unique_identifier, { publicEvents: {}, privateEvents: {}, socketOptions: {}, onJoin: callback, onLeave: callback, onSocketSuccess: callback, onSocketError: callback}
 class PusherLite {
-  constructor(host, appKey, jwt, uniqueUserId, opts = {}) {
-    if (host)   { this.host   = host }   else { throw "must set the hostname for the socket connection" }
-    if (appKey) { this.appKey = appKey } else { throw "must set the application key to connect to" }
-    if (jwt)    { this.jwt    = jwt }    else { throw "must set a valid authenticated JWT" }
-    if (uniqueUserId) { this.uniqueUserId = uniqueUserId } else { throw "must set a unique identifier for this client" }
-
-    this.publicEvents  = opts.publicEvents || {}
-    this.privateEvents = opts.privateEvents || {}
-    this.socketOptions = opts.socketOptions || {} // you can pass options directly to the internal Socket
-    this.presences = {}
-
-    if (opts.onJoin)  { this.onJoin = opts.onJoin }   else { this.onJoin = defaultOnJoin }
-    if (opts.onLeave) { this.onLeave = opts.onLeave } else { this.onLeave = defaultOnLeave }
-
-    this.publicEvents["presence_state"] = state => {
-      this.presences = Presence.syncState(this.presences, state, this.onJoin, this.onLeave)
-      if (this.publicEvents["custom_presence_state"]) {
-        this.publicEvents["custom_presence_state"](this.presences)
-      }
-    }
-
-    this.publicEvents["presence_diff"] = diff => {
-      this.presences =  Presence.syncDiff(this.presences, diff, this.onJoin, this.onLeave)
-      if (this.publicEvents["custom_presence_diff"]) {
-        this.publicEvents["custom_presence_diff"](this.presences)
-      }
-    }
+  constructor(appKey, opts = {}) {
+    if (appKey)    { this.appKey = appKey }    else { throw "must set the application key to connect to" }
+    if (opts.host) { this.host   = opts.host } else { this.host = "expusherlite.cm42.io" }
+    if (opts.jwt)  { this.jwt    = opts.jwt }  else { throw "must set a valid authenticated JWT" }
+    if (opts.uniqueUserId) { this.uniqueUserId = opts.uniqueUserId } else { throw "must set a unique identifier for this client" }
 
     if (opts.onSocketSuccess) { this.socketSuccess = opts.onSocketSuccess } else { this.socketSuccess = defaultSocketSuccess }
     if (opts.onSocketError)   { this.socketError   = opts.onSocketError }   else { this.socketError   = defaultSocketError }
 
-    this.connected = false
+    this.channels = {}
+
+    this.socketOptions = opts.socketOptions || {} // you can pass options directly to the internal Socket
+    this.socketOptions["params"] = socketParameters(this)
+
+    this.socket = new Socket(`${ (opts.ssl ? 'wss' : 'ws') }://${this.host}/socket`, this.socketOptions)
+    this.socket.connect()
   }
 
-  cleanPresences() {
-    this.presences = {}
+  subscribe(topic, opts = {}) {
+    this.channels[topic] = new PusherLiteChannel(topic, this, opts)
+    return this.channels[topic]
   }
 
-  getPresences() {
-    this.presences;
-  }
-
-  onSocketSuccess(callback) {
-    if (this.connected) throw "must set socket event listeners before calling connect()";
-    this.socketSuccess = callback;
-  }
-
-  onSocketError(callback) {
-    if (this.connected) throw "must set socket event listeners before calling connect()";
-    this.socketError = callback;
-  }
-
-  listenTo(event, callback) {
-    if (this.connected) throw "must set event listeners before calling connect()";
-    this.publicEvents[event] = callback;
-  }
-
-  privateListenTo(event, callback) {
-    if (this.connected) throw "must set event listeners before calling connect()";
-    this.privateEvents[event] = callback;
-  }
-
-  connect() {
-    connectSockets(this)
-    setChannels(this)
-    bindEventsToChannels(this)
-    joinChannels(this)
-    this.connected = true
-  }
-
-  trigger(event, payload) {
-    if (!this.connected) throw "must call connect() before triggering";
-    this.publicChannel.push(event, payload)
-  }
-
-  triggerDirect(event, payload, destinationId) {
-    if (!this.connected) throw "must call connect() before triggering";
-    this.publicChannel.push("direct", { uid: destinationId, event: event, payload: payload })
+  joinAll() {
+    for(let [topic, channel] of Object.entries(this.channels)) {
+      channel.join()
+    }
   }
 }
 

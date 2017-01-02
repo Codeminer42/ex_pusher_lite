@@ -36,12 +36,6 @@ Now one can broadcast messages to a Channel like this:
 
     curl -X POST -H "Authorization: Bearer eyJh...u510w" http://localhost:4000/api/organizations/acme-inc/applications/4036...f193/event/new_message\?name\=John\&message\=Hello
 
-You can also send messages directly to a user like this:
-
-    curl -X POST -H "Authorization: Bearer eyJh...510w" http://localhost:4000/api/organizations/acme-inc/applications/4036...f193/event/new_message\?name\=John\&message\=HelloWorld\&uid\=akitaonrails\&direct\=true
-
-The trick to receive direct events is to subscribe to 2 channels, a general broadcast channel and a single-user, uniquely identified channel.
-
 Check out the homepage example for instruction on how to setup the Socket connection (also the `js/pusher_lite.js` example).
 
 ### Client-Side Usage
@@ -52,36 +46,27 @@ From your application you must import the "/js/pusher.js":
 
 Now you can use it like this (ES6):
 
-    import {PusherLite} from "pusher"
+    var PusherLite = require("pusher_lite").default;
 
-    const publicEvents = {
-      "new_message", payload => {
-        // from the main channel (for public messages)
-        console.log(payload.name)
-        console.log(payload.message)
-      }
-    }
+    var pusher = new PusherLite("4036...f193", {
+      jwt: "eyJh...510w",
+      uniqueUserId: "user_unique_identifier" })
 
-    const privateMessages = {
-      "direct_message", payload => {
-        // from the direct channel (for private messages)
-        console.log(payload.name)
-        console.log(payload.message)
-      }
-    }
+    var publicChannel = pusher.subscribe("general")
 
-    let pusher = new PusherLite("4036...f193", "eyJh...510w", "user_unique_identifier", publicEvents, privateEvents)
+    publicChannel.bind("new_message", function(payload) {
+      var chat = $("#chat")
+      chat.append("<p><strong>" + payload.name + "</strong> " + payload.message + "</p>");
+      chat.scrollTop(chat.prop("scrollHeight"));
+    })
 
-    pusher.connect()
+    pusher.joinAll();
 
 Now you can send messages using the APIs as described in the previous sections. This will give you a chance to store or filter the messages before broadcasting into the channels.
 
 Or you can allow unfiltered messages directly down the socket like this:
 
-    pusher.sendPublic("new_message", { "name" : "John", "message" : "Hello" })
-
-    // private message from John only to Jane
-    pusher.sendPrivate("new_message, { "name" : John", "message" : "Hello" }, "Jane")
+    publicChannel.trigger("new_message", { "name" : "John", "message" : "Hello" })
 
 ### Development
 

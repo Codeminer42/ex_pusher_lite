@@ -42,19 +42,13 @@ defmodule ExPusherLite.ApplicationController do
   end
 
   def show(conn, %{"organization_id" => organization_id, "id" => id}, _current_user, _claims) do
-    application = organization_id
-      |> Application.by_organization_id_or_slug
-      |> Application.by_id_or_key(id)
-      |> Repo.one!
+    application = load_application(organization_id, id)
 
     render(conn, "show.json", application: application)
   end
 
   def update(conn, %{"organization_id" => organization_id, "id" => id, "application" => application_params}, _current_user, _claims) do
-    application = organization_id
-      |> Application.by_organization_id_or_slug
-      |> Application.by_id_or_key(id)
-      |> Repo.one!
+    application = load_application(organization_id, id)
     changeset = Application.changeset(application, application_params)
 
     case Repo.update(changeset) do
@@ -68,10 +62,7 @@ defmodule ExPusherLite.ApplicationController do
   end
 
   def delete(conn, %{"organization_id" => organization_id, "id" => id}, _current_user, _claims) do
-    application = organization_id
-      |> Application.by_organization_id_or_slug
-      |> Application.by_id_or_key(id)
-      |> Repo.one!
+    application = load_application(organization_id, id)
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
@@ -81,22 +72,13 @@ defmodule ExPusherLite.ApplicationController do
   end
 
   def event(conn, %{"organization_id" => organization_id, "application_id" => id, "event" => event} = params, _current_user, _claims) do
-    application = organization_id
-      |> Application.by_organization_id_or_slug
-      |> Application.by_id_or_key(id)
-      |> Repo.one!
-
-    room_name = if Map.has_key?(params, "direct") and Map.has_key?(params, "uid") do
-        ExPusherLite.UserSocket.generate_id(application.app_key, params["uid"])
-      else
-        "lobby:#{application.app_key}"
-      end
+    application = load_application(organization_id, id)
+    room_name   = ExPusherLite.UserSocket.generate_id(application.app_key, params["topic"] || "general")
 
     if event == "presence_list" do
-      conn
-        |> render("presence_list.json", list: ExPusherLite.Presence.list(room_name))
+      render(conn, "presence_list.json", list: ExPusherLite.Presence.list(room_name))
     else
-      ExPusherLite.Endpoint.broadcast_from(self(), room_name, event, parse_payload(params))
+      ExPusherLite.Endpoint.broadcast_from(self(), room_name, event, clean_payload(params))
       send_resp(conn, :no_content, "")
     end
   end
@@ -112,11 +94,14 @@ defmodule ExPusherLite.ApplicationController do
     end
   end
 
-  defp parse_payload(params) do
-    if params["payload"] do
-      Poison.decode!(params["payload"])
-    else
-      Map.drop(params, ["organization_id", "application_id", "event", "new_event"])
-    end
+  defp load_application(organization_id, id) do
+    organization_id
+      |> Application.by_organization_id_or_slug
+      |> Application.by_id_or_key(id)
+      |> Repo.one!
+  end
+
+  defp clean_payload(params) do
+    Map.drop(params, ["organization_id", "application_id", "event", "topic"])
   end
 end

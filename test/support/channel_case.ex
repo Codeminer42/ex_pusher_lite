@@ -20,7 +20,7 @@ defmodule ExPusherLite.ChannelCase do
       # Import conveniences for testing with channels
       use Phoenix.ChannelTest
 
-      alias ExPusherLite.Repo
+      alias ExPusherLite.{Repo, UserSocket}
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
@@ -30,14 +30,10 @@ defmodule ExPusherLite.ChannelCase do
       # The default endpoint for testing
       @endpoint ExPusherLite.Endpoint
 
-      def connect_socket_and_join_channel(app_key, user_id, uid) do
-        {:ok, _, socket} = ExPusherLite.UserSocket.generate_id(app_key, uid)
+      def connect_socket_and_join_channel(app_key, user_id, uid, topic \\ "general") do
+        {:ok, _, socket} = UserSocket.generate_id(app_key, uid)
           |> socket(%{app_key: app_key, user_id: user_id, uid: uid})
-          |> subscribe_and_join(ExPusherLite.LobbyChannel,  ExPusherLite.UserSocket.generate_id(app_key))
-
-        {:ok, _, socket} = socket
-          |> subscribe_and_join(ExPusherLite.LobbyChannel, ExPusherLite.UserSocket.generate_id(app_key, uid))
-
+          |> subscribe_and_join(ExPusherLite.LobbyChannel, UserSocket.generate_id(app_key, topic))
         socket
       end
     end

@@ -4,6 +4,39 @@
     <h1 class="display-3">Welcome to ExPusherLite!</h1>
     <br />
     <p>This is a minimal Pusher.com clone made in Elixir intended to be used as the real-time communications component for web applications built in any language that are in need for Web Sockets support.</p>
+    <p>After you sign up and create a new Application, you can create an authentication token from the server side like this (Ruby example):</p>
+    <pre>
+      <code>
+      uri = URI.parse("http://expusherlite.cm42.io/api/sessions")
+      response = Net::HTTP.post_form(uri, {"token" => "your secret user token"})
+      @guardian_token = JSON.parse(response.body)["jwt"]
+      </code>
+    </pre>
+    <p>And with the authenticated JWT token you can pass it to your application's client-side Javascript like this:</p>
+    <pre>
+      <code>
+      // in the HTML don't forget to import the required JS
+      // &lt;script src="http://expusherlite.cm42.io/js/pusher.js"&gt;&lt;/script&gt;
+
+      var PusherLite = require("pusher_lite").default;
+
+      var pusher = new PusherLite("your new application public key", {
+        jwt: "JWT session created through the /api/sessions API above",
+        uniqueUserId: "unique identifier for your user" })
+
+      var publicChannel = pusher.subscribe("general"); // any topic name
+
+      publicChannel.bind("new_message", function(payload) {
+        console.log(payload.name);
+        console.log(payload.message);
+      })
+
+      pusher.joinAll(); // you can subscribe to any number of channels, bind events, and join all at once
+
+      // send message to the channel
+      publicChannel.trigger("new_message", { "name" : "John", "message" : "Hello" });
+      </code>
+    </pre>
     <br />
     <%= if Coherence.logged_in?(@conn) do %>
       <p><a class="btn btn-primary btn-lg" href="<%= registration_path(@conn, :show) %>" role="button">Check out your account!</a></p>

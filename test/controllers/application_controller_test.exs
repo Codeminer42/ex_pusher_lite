@@ -81,30 +81,11 @@ defmodule ExPusherLite.ApplicationControllerTest do
 
     EventChannelTest.connect_socket_and_join_channel(application.app_key, user.id, user.name)
 
-    ExPusherLite.Endpoint.subscribe(room_name)
     post conn, organization_application_event_path(conn, :event, organization, application, "new_message"), params
 
     assert_receive %Phoenix.Socket.Message{
       event: "new_message",
       payload: %{"message" => "Hello World", "name" => "John Wayne"},
-      topic: ^room_name}
-  end
-
-  test "broadcasts direct events to a user in his direct channel", %{conn: conn, organization: organization, user: user} do
-    application = build_application(organization)
-
-    room_name = ExPusherLite.UserSocket.generate_id(application.app_key, "Jane Doe")
-    params    = %{name: "John Wayne", message: "Hello World!!", direct: true, uid: "Jane Doe"}
-
-    EventChannelTest.connect_socket_and_join_channel(application.app_key, user.id, user.name)
-    EventChannelTest.connect_socket_and_join_channel(application.app_key, user.id, "Jane Doe")
-
-    ExPusherLite.Endpoint.subscribe(room_name)
-    post conn, organization_application_event_path(conn, :event, organization, application, "new_message"), params
-
-    assert_receive %Phoenix.Socket.Message{
-      event: "new_message",
-      payload: %{"message" => "Hello World!!", "name" => "John Wayne"},
       topic: ^room_name}
   end
 

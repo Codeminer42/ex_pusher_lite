@@ -23,17 +23,8 @@ defmodule ExPusherLite.LobbyChannelTest do
     assert {:ok, %{assigns: %{guardian_default_jwt: ^jwt}}} = ExPusherLite.UserSocket.connect(options, socket)
   end
 
-  test "broadcasts normal messages to general channel", %{socket: socket} do
+  test "broadcasts messages to channel", %{socket: socket} do
     push socket, "new_message", %{"name" => "John Doe", "message" => "Hello World"}
     assert_broadcast "new_message", %{"name" => "John Doe", "message" => "Hello World"}
-  end
-
-  test "broadcasts direct messages, unwrapping the client side payload as a normal message", %{socket: socket, application: application, admin_user: admin_user} do
-    socket2 = connect_socket_and_join_channel(application.app_key, admin_user.id, "Jane Doe")
-
-    push socket, "direct", %{"event" => "new_message", "payload" => %{"name" => "Jane Doe", "message" => "Hello"}, "uid" => "John Wayne"}
-    assert_broadcast "new_message", %{"from_uid" => "John Wayne", "name" => "Jane Doe", "message" => "Hello"}
-
-    leave socket2
   end
 end

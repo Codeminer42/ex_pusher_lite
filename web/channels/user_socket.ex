@@ -47,6 +47,5 @@ defmodule ExPusherLite.UserSocket do
   # Returning `nil` makes this socket anonymous.
   def id(socket), do: generate_id(socket.assigns.app_key, socket.assigns.uid)
 
-  def generate_id(app_key, uid), do: "lobby:#{app_key}/uid:#{uid}"
-  def generate_id(app_key), do: "lobby:#{app_key}"
+  def generate_id(app_key, topic \\ "general"), do: "lobby:#{app_key}:#{topic}"
 end
