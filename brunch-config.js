@@ -3,7 +3,7 @@ exports.config = {
   files: {
     javascripts: {
        joinTo: {
-         "js/app.js": /^(web\/static\/js[^\/pusher_lite])|(node_modules)/,
+         "js/app.js": /(web\/static\/js\/app)|(node_modules)/,
          "js/ex_admin_common.js": ["web/static/vendor/ex_admin_common.js"],
          "js/admin_lte2.js": ["web/static/vendor/admin_lte2.js"],
          "js/jquery.min.js": ["web/static/vendor/jquery.min.js"],
@@ -69,10 +69,10 @@ exports.config = {
 
   modules: {
     autoRequire: {
-      "js/app.js": ["web/static/js/app"]
+      "js/app.js": ["app"]
     },
     nameCleaner: function(path) {
-      return path.replace(/^web\/static\/js\//, '');
+      return path.replace(/web\/static\/js\//, '');
     }
   },
 

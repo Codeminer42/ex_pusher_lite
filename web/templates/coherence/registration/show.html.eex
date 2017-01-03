@@ -70,7 +70,7 @@
               <td>
                 <%= form_for ExPusherLite.Application.changeset(application, %{}), "/api/organizations/#{organization.slug}/applications/#{application.app_key}", [as: :application, method: :post, onsubmit: "return false;", id: "application_#{application.app_key}"], fn _f -> %>
                 <div class="form-group">
-                  <%= submit "Delete", class: "btn btn-danger", onclick: "applicationDelete('application_#{application.app_key}')" %>
+                  <%= submit "Delete", class: "btn btn-danger", onclick: "require(\"app\").App.applicationDelete('application_#{application.app_key}')" %>
                 </div>
                 <% end %>
               </td>
@@ -88,7 +88,7 @@
           <%= error_tag f, :name %>
         </div>
         <div class="form-group">
-          <%= submit "Submit", class: "btn btn-primary", onclick: "applicationSubmit()" %>
+          <%= submit "Submit", class: "btn btn-primary", onclick: "require(\"app\").App.applicationSubmit()" %>
         </div>
       <% end %>
     </div>
