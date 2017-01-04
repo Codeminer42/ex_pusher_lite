@@ -74,7 +74,7 @@ defmodule ExPusherLite.Coherence.RegistrationController do
   """
   def show(conn, _) do
     user = Coherence.current_user(conn)
-      |> Repo.preload(organizations: [:applications])
+      |> Repo.preload(organizations: [applications: Application.active(Application)])
       |> Repo.preload(:tokens)
     conn
     |> assign(:guardian_jwt, UserToken.jwt(user, %{}))

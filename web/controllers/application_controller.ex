@@ -10,6 +10,7 @@ defmodule ExPusherLite.ApplicationController do
   def index(conn, %{"organization_id" => organization_id}, _current_user, _claims) do
     applications = organization_id
       |> Application.by_organization_id_or_slug
+      |> Application.active
       |> Repo.all
 
     render(conn, "index.json", applications: applications)
@@ -63,12 +64,16 @@ defmodule ExPusherLite.ApplicationController do
 
   def delete(conn, %{"organization_id" => organization_id, "id" => id}, _current_user, _claims) do
     application = load_application(organization_id, id)
+    changeset = Application.changeset(application, %{"archived_at" => :calendar.local_time()})
 
-    # Here we use delete! (with a bang) because we expect
-    # it to always work (and if it does not, it will raise).
-    Repo.delete!(application)
-
-    send_resp(conn, :no_content, "")
+    case Repo.update(changeset) do
+      {:ok, application} ->
+        render(conn, "show.json", application: application)
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(ExPusherLite.ChangesetView, "error.json", changeset: changeset)
+    end
   end
 
   def event(conn, %{"organization_id" => organization_id, "application_id" => id, "event" => event} = params, _current_user, _claims) do
@@ -98,6 +103,7 @@ defmodule ExPusherLite.ApplicationController do
     organization_id
       |> Application.by_organization_id_or_slug
       |> Application.by_id_or_key(id)
+      |> Application.active
       |> Repo.one!
   end
 

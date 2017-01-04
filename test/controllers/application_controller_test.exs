@@ -1,7 +1,7 @@
 defmodule ExPusherLite.ApplicationControllerTest do
   use ExPusherLite.ConnCase
 
-  alias ExPusherLite.{Application, Ownership}
+  alias ExPusherLite.Application
   @valid_attrs %{name: "some content"}
   @invalid_attrs %{name: nil}
 
@@ -65,12 +65,11 @@ defmodule ExPusherLite.ApplicationControllerTest do
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  test "deletes chosen resource", %{conn: conn, organization: organization} do
+  test "archives chosen resource", %{conn: conn, organization: organization} do
     application = build_application(organization)
     conn = delete conn, organization_application_path(conn, :delete, organization, application)
-    assert response(conn, 204)
-    refute Repo.get(Application, application.id)
-    assert Repo.aggregate(Ownership, :count, :id) == 0
+    assert response(conn, 200)
+    assert Repo.get(Application, application.id).archived_at != nil
   end
 
   test "broadcasts events to channel", %{conn: conn, organization: organization, user: user} do
