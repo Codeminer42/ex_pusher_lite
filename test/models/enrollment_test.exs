@@ -5,7 +5,6 @@ defmodule ExPusherLite.EnrollmentTest do
 
   @valid_attrs_user %{name: "John Doe", email: "john@example.org", password: "password", password_confirmation: "password"}
   @valid_attrs_organization %{name: "Acme Inc."}
-  @invalid_attrs %{}
 
   setup do
     {:ok, user} = User.changeset(%User{}, @valid_attrs_user) |> Repo.insert

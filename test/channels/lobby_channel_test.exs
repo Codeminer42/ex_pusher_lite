@@ -2,10 +2,10 @@ defmodule ExPusherLite.LobbyChannelTest do
   use ExPusherLite.ChannelCase
 
   setup do
-    admin_user   = create_admin_user
+    admin_user   = create_admin_user()
     application  = admin_user
-      |> build_organization
-      |> build_application
+      |> build_organization()
+      |> build_application()
 
     socket       = connect_socket_and_join_channel(application.app_key, admin_user.id, admin_user.name)
 

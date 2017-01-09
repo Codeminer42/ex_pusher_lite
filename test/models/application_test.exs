@@ -29,7 +29,7 @@ defmodule ExPusherLite.ApplicationTest do
   end
 
   test "fetch by organization slug and application key" do
-    user         = create_admin_user
+    user         = create_admin_user()
     organization = build_organization(user)
     application  = build_application(organization)
 

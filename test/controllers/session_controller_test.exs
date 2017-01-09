@@ -2,7 +2,7 @@ defmodule ExPusherLite.SessionControllerTest do
   use ExPusherLite.ConnCase
 
   setup %{conn: _conn} do
-    token = create_admin_user
+    token = create_admin_user()
       |> create_admin_token
 
     conn = build_conn()

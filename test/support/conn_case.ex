@@ -39,7 +39,7 @@ defmodule ExPusherLite.ConnCase do
           |> assign(:test_user, user)
           |> put_req_header("authorization", "Bearer #{jwt}")
       end
-      def guardian_sign_in(%Plug.Conn{} = conn), do: guardian_sign_in(conn, create_admin_user)
+      def guardian_sign_in(%Plug.Conn{} = conn), do: guardian_sign_in(conn, create_admin_user())
     end
   end
 

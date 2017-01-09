@@ -5,7 +5,6 @@ defmodule ExPusherLite.OwnershipTest do
 
   @valid_attrs_application %{name: "Foo App"}
   @valid_attrs_organization %{name: "Acme Inc."}
-  @invalid_attrs %{name: nil}
 
   setup do
     {:ok, application} = Application.changeset(%Application{}, @valid_attrs_application) |> Repo.insert

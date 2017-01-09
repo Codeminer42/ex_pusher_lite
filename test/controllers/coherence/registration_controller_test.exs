@@ -2,7 +2,7 @@ defmodule ExPusherLite.RegistrationController do
   use ExPusherLite.ConnCase
 
   setup %{conn: conn} do
-    user = create_admin_user
+    user = create_admin_user()
     conn = assign conn, :current_user, user
     {:ok, conn: conn, user: user}
   end
