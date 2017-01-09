@@ -9,7 +9,7 @@ defmodule ExPusherLite.ExAdmin.Enrollment do
 
   register_resource ExPusherLite.Enrollment do
     index do
-      selectable_column
+      selectable_column()
 
       column :id
       column :organization, fn(enrollment) -> enrollment.organization.name end

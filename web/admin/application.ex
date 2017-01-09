@@ -5,13 +5,13 @@ defmodule ExPusherLite.ExAdmin.Application do
 
   register_resource ExPusherLite.Application do
     index do
-      selectable_column
+      selectable_column()
 
       column :id
       column :name
       column :archived_at
 
-      actions
+      actions()
     end
 
     show application do

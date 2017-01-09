@@ -5,14 +5,14 @@ defmodule ExPusherLite.ExAdmin.User do
 
   register_resource ExPusherLite.User do
     index do
-      selectable_column
+      selectable_column()
 
       column :id
       column :name
       column :email
       column :last_sign_in_at
 
-      actions
+      actions()
     end
 
     show user do

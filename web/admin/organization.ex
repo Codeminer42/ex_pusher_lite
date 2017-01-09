@@ -3,7 +3,7 @@ defmodule ExPusherLite.ExAdmin.Organization do
 
   register_resource ExPusherLite.Organization do
     index do
-      selectable_column
+      selectable_column()
 
       column :id
       column :name

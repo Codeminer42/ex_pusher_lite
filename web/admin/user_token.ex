@@ -7,14 +7,14 @@ defmodule ExPusherLite.ExAdmin.UserToken do
 
   register_resource ExPusherLite.UserToken do
     index do
-      selectable_column
+      selectable_column()
 
       column :id
       column :user, fn(user_token) -> user_token.user.name end
       column :token
       column :invalidated_at
 
-      actions
+      actions()
     end
 
     show _user_token do

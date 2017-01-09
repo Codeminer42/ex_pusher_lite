@@ -9,7 +9,7 @@ defmodule ExPusherLite.ExAdmin.Ownership do
 
   register_resource ExPusherLite.Ownership do
     index do
-      selectable_column
+      selectable_column()
 
       column :id
       column :organization, fn(ownership) -> ownership.organization.name end

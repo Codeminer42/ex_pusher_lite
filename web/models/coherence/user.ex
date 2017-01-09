@@ -6,9 +6,9 @@ defmodule ExPusherLite.User do
     field :name, :string
     field :email, :string
     field :is_root, :boolean, null: false, default: false
-    coherence_schema
+    coherence_schema()
 
-    timestamps
+    timestamps()
 
     has_many :tokens, ExPusherLite.UserToken, on_delete: :delete_all, on_replace: :delete
     has_many :enrollments, ExPusherLite.Enrollment, on_delete: :delete_all, on_replace: :delete
@@ -26,7 +26,7 @@ defmodule ExPusherLite.User do
 
   defp create_changeset(model, params) do
     model
-    |> cast(params, [:name, :email, :is_root] ++ coherence_fields)
+    |> cast(params, [:name, :email, :is_root] ++ coherence_fields())
     |> validate_required([:name, :email])
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)

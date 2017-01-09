@@ -51,10 +51,10 @@ defmodule ExPusherLite.UserToken do
   end
 
   defp put_permissions(%Enrollment{}) do
-    Map.put(perms, :admin, Guardian.Permissions.max )
+    Map.put(perms(), :admin, Guardian.Permissions.max)
   end
   defp put_permissions(_) do
-    perms
+    perms()
   end
 
   defp perms do

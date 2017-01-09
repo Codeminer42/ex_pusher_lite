@@ -50,7 +50,7 @@ defmodule ExPusherLite.Coherence.InvitationController do
     case repo.one from u in user_schema, where: u.email == ^email do
       nil ->
         token = random_string 48
-        url = router_helpers.invitation_url(conn, :edit, token)
+        url = router_helpers().invitation_url(conn, :edit, token)
         cs = put_change(cs, :token, token)
         case Config.repo.insert cs do
           {:ok, invitation} ->
@@ -142,7 +142,7 @@ defmodule ExPusherLite.Coherence.InvitationController do
         |> put_flash(:error, "Can't find that token")
       invitation ->
         send_user_email :invitation, invitation,
-          router_helpers.invitation_url(conn, :edit, invitation.token)
+          router_helpers().invitation_url(conn, :edit, invitation.token)
         put_flash conn, :info, "Invitation sent."
     end
     |> redirect(to: logged_out_url(conn))

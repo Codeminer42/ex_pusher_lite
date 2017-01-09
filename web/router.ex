@@ -34,7 +34,7 @@ defmodule ExPusherLite.Router do
 
   scope "/", ExPusherLite do
     pipe_through [ :browser, :session ]
-    coherence_routes
+    coherence_routes()
   end
 
   scope "/", ExPusherLite do
@@ -56,7 +56,7 @@ defmodule ExPusherLite.Router do
   scope "/admin", ExAdmin do
     pipe_through [ :browser ,:protected, :protected_root]
 
-    admin_routes
+    admin_routes()
   end
 
   scope "/api", ExPusherLite do

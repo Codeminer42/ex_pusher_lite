@@ -7,7 +7,7 @@ defmodule ExPusherLite.LobbyChannel do
   def join("lobby:" <> topic_identifier, _payload, socket) do
     case parse_identifier(topic_identifier) do
     {:ok, %{app_key: _app_key, topic: _topic}} ->
-      send(self, :after_join)
+      send(self(), :after_join)
       {:ok, socket}
     {:error, _} ->
       {:error, "invalid"}
