@@ -23,3 +23,6 @@ erl_crash.dump
 # variables.
 /config/prod.secret.exs
 .deliver/releases/*
+
+# It ignores default docker-compose settings
+docker-compose.yml

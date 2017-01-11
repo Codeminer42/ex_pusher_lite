@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - db:/var/lib/postgresql/data
+    expose:
+      - '5432'
+
+  web:
+    build: .
+    environment:
+      - DB_HOST=db
+    command: mix phoenix.server
+    volumes:
+      - .:/app
+    ports:
+      - '4000:4000'
+    links:
+      - db
+
+volumes:
+  db:
