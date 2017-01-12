@@ -78,6 +78,16 @@ To start your Phoenix app:
   * Install Node.js dependencies with `npm install`
   * Start Phoenix endpoint with `mix phoenix.server`
 
+Setup using docker:
+
+```bash
+$ cp docker-compose.sample.yml docker-compose.yml
+$ docker-compose build
+$ docker-compose run web mix ecto.setup
+$ docker-compose run web npm install
+$ docker-compose up web
+```
+
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 Ready to run in production? Please [check our deployment guides](https://www.phoenixframework.org/docs/deployment).

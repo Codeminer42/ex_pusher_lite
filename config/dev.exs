@@ -39,7 +39,7 @@ config :ex_pusher_lite, ExPusherLite.Repo,
   username: "postgres",
   password: "postgres",
   database: "ex_pusher_lite_dev",
-  hostname: "localhost",
+  hostname: System.get_env("DB_HOST") || "localhost",
   pool_size: 10
 
 config :guardian, Guardian,
