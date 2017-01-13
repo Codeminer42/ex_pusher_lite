@@ -47,7 +47,11 @@ defmodule ExPusherLite.UserToken do
   end
 
   defp find_admin_enrollment(user_id) do
-    Enrollment.by_user_id(user_id) |> Enrollment.admin |> Repo.one
+    user_id
+    |> Enrollment.by_user_id
+    |> Enrollment.admin
+    |> Ecto.Query.first
+    |> Repo.one
   end
 
   defp put_permissions(%Enrollment{}) do

@@ -80,7 +80,7 @@
         </table>
       <% end %>
 
-      <%= form_for @application, "/api/organizations/#{organization.slug}/applications", [as: :application, method: :post, onsubmit: "return false;", id: "application_form"], fn f -> %>
+      <%= form_for @application, "/api/organizations/#{organization.slug}/applications", [as: :application, method: :post, onsubmit: "return false;", id: "application_form_#{organization.id}"], fn f -> %>
         <input type="hidden" name="jwt" id="jwt" value="" />
         <div class="form-group">
           <%= required_label f, :name, class: "control-label" %>
@@ -88,7 +88,7 @@
           <%= error_tag f, :name %>
         </div>
         <div class="form-group">
-          <%= submit "Submit", class: "btn btn-primary", onclick: "require(\"app\").App.applicationSubmit()" %>
+          <%= submit "Submit", class: "btn btn-primary", onclick: "require(\"app\").App.applicationSubmit('application_form_#{organization.id}')" %>
         </div>
       <% end %>
     </div>

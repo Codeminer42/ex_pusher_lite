@@ -45,9 +45,10 @@ import "phoenix_html"
 })();
 
 export var App = {
-  applicationSubmit: function() {
-    var url = $("#application_form").attr('action');
-    var applicationName = $("#application_name").val();
+    applicationSubmit: function(formId) {
+    var form = $("#" + formId);
+    var url = form.attr('action');
+    var applicationName = form.find("#application_name").val();
     $.ajax({
       type : 'POST',
       url : url,
