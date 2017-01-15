@@ -90,5 +90,47 @@ export var App = {
         }
       });
     }
+  },
+
+  tokenSubmit: function(url) {
+      if(confirm("Are you sure?")){
+      $.ajax({
+        type : 'POST',
+        url : url,
+        headers : {
+            Authorization : 'Bearer ' + window.guardian_jwt
+        },
+        contentType : 'application/x-www-form-urlencoded',
+        data : {},
+        success : function(response) {
+          location.reload();
+        },
+        error : function(xhr, status, error) {
+          var err = eval("(" + xhr.responseText + ")");
+          console.log(err);
+        }
+      });
+    }
+  },
+
+  tokenDelete: function(url) {
+    if(confirm("Are you sure?")){
+      $.ajax({
+        type : 'DELETE',
+        url : url,
+        headers : {
+            Authorization : 'Bearer ' + window.guardian_jwt
+        },
+        contentType : 'application/x-www-form-urlencoded',
+        data : {},
+        success : function(response) {
+          location.reload();
+        },
+        error : function(xhr, status, error) {
+          var err = eval("(" + xhr.responseText + ")");
+          console.log(err);
+        }
+      });
+    }
   }
 }

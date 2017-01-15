@@ -37,10 +37,30 @@
 <div class="panel panel-default">
   <div class="panel-heading">Secret Tokens</div>
   <div class="panel-body">
-  <ul class="list-group">
-    <%= for token <- @user.tokens do %>
-      <li class="list-group-item"><%= token.token %><%= if token.invalidated_at, do: " (invalid)", else: "" %></li>
-    <% end %>
+    <%= link "Novo", to: "#", class: "btn btn-danger", onclick: "require(\"app\").App.tokenSubmit(\"#{user_token_path(@conn, :create, @user.id)}\")" %>
+    <ul class="list-group">
+      <table class="table">
+        <thead>
+          <tr>
+            <td>Application Name</td>
+            <td>Invalidated At</td>
+            <td></td>
+          </tr>
+        </thead>
+        <tbody id="applications">
+        <%= for token <- @user.tokens do %>
+          <tr>
+            <td><%= token.token %></td>
+            <td><%= token.invalidated_at || "-" %></td>
+            <td>
+              <%= link "Delete", to: "#", class: "btn btn-danger", onclick: "require(\"app\").App.tokenDelete(\"/api/users/#{@user.id}/tokens/#{token.token}\")" %>
+            </td>
+          </tr>
+          <tr>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
   </ul>
   </div>
 </div>
