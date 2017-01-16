@@ -93,7 +93,7 @@ export var App = {
   },
 
   tokenSubmit: function(url) {
-      if(confirm("Are you sure?")){
+    if(confirm("Are you sure?")){
       $.ajax({
         type : 'POST',
         url : url,
