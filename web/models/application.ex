@@ -53,7 +53,7 @@ defmodule ExPusherLite.Application do
     end
   end
 
-  def active(query) do
+  def active(query \\ __MODULE__) do
     from a in query,
     where: is_nil(a.archived_at)
   end

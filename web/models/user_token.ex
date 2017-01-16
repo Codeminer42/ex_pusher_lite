@@ -38,7 +38,7 @@ defmodule ExPusherLite.UserToken do
     jwt
   end
 
-  def valid(query) do
+  def valid(query \\ __MODULE__) do
     from a in query,
     where: is_nil(a.invalidated_at)
   end
