@@ -52,4 +52,9 @@ defmodule ExPusherLite.Application do
         queryable |> where([a], a.app_key == ^application_id)
     end
   end
+
+  def active(query \\ __MODULE__) do
+    from a in query,
+    where: is_nil(a.archived_at)
+  end
 end

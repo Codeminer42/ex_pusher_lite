@@ -38,6 +38,11 @@ defmodule ExPusherLite.UserToken do
     jwt
   end
 
+  def valid(query \\ __MODULE__) do
+    from a in query,
+    where: is_nil(a.invalidated_at)
+  end
+
   defp get_perms(%User{}, %{test: true}) do
     %{ default: Guardian.Permissions.max, admin: Guardian.Permissions.max }
   end

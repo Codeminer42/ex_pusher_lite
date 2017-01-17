@@ -73,5 +73,10 @@ defmodule ExPusherLite.Router do
         post "/event/:event", ApplicationController, :event, as: :event
       end
     end
+
+    scope "/users" do
+      post "/:user_id/tokens", UserTokenController, :create
+      delete "/:user_id/tokens/:token", UserTokenController, :delete, as: :delete_token
+    end
   end
 end
