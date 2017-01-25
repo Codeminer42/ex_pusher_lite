@@ -10,7 +10,8 @@ defmodule ExPusherLite.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      aliases: aliases(),
-     deps: deps()]
+     deps: deps(),
+     dialyzer: [plt_add_deps: :transitive]]
   end
 
   # Configuration for the OTP application.
@@ -45,7 +46,8 @@ defmodule ExPusherLite.Mixfile do
      {:edeliver, "~> 1.4.0"},
      {:distillery, "~> 1.0"},
      {:corsica, "~> 0.5"},
-     {:credo, "~> 0.3", only: [:dev, :test]}]
+     {:credo, "~> 0.3", only: [:dev, :test]},
+     {:dialyxir, "~> 0.4", only: [:dev], runtime: false}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

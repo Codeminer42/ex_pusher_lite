@@ -74,4 +74,12 @@ defmodule ExPusherLite.Presence do
   """
   use Phoenix.Presence, otp_app: :ex_pusher_lite,
                         pubsub_server: ExPusherLite.PubSub
+
+  @dialyzer [
+    {:nowarn_function, 'init': 1},
+    {:nowarn_function, 'track': 3},
+    {:nowarn_function, 'track': 4},
+    {:nowarn_function, 'update': 3},
+    {:nowarn_function, 'update': 4},
+    ]
 end
