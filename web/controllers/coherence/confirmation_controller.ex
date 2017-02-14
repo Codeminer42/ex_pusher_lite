@@ -10,6 +10,8 @@ defmodule ExPusherLite.Coherence.ConfirmationController do
   use Timex
   alias Coherence.ControllerHelpers, as: Helpers
   alias Coherence.Schema.Confirmable
+  alias ExPusherLite.{UserEmail, UserToken}
+  alias ExPusherLite.Coherence.Mailer
 
   plug Coherence.ValidateOption, :confirmable
 
@@ -91,7 +93,10 @@ defmodule ExPusherLite.Coherence.ConfirmationController do
             confirmed_at: Ecto.DateTime.utc,
             })
           case Config.repo.update(changeset) do
-            {:ok, _user} ->
+            {:ok, user} ->
+              user
+              |> send_welcome_email
+
               conn
               |> put_flash(:info, "User account confirmed successfully.")
               |> redirect_to(:confirmation_edit, params)
@@ -101,6 +106,15 @@ defmodule ExPusherLite.Coherence.ConfirmationController do
               |> redirect_to(:confirmation_edit_error, params)
           end
         end
+    end
+  end
+
+  defp send_welcome_email(user) do
+    case UserToken.Queries.get_first_token_by_user(user) do
+      token ->
+        user
+        |> UserEmail.welcome(token)
+        |> Mailer.deliver
     end
   end
 end
