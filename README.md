@@ -94,4 +94,10 @@ Ready to run in production? Please [check our deployment guides](https://www.pho
 
 To collaborate just follow Pull Request best practices, add tests.
 
-Fabio Akita &copy; Codeminer 42 2016
+### Copyright and License
+
+This material is copyright (c) 2016-2017 contributors.
+
+It is open and licensed under the GNU Affero General Public License (AGPL) v3.0 whose full text may be found at:
+
+[http://www.fsf.org/licensing/licenses/agpl-3.0.html](http://www.fsf.org/licensing/licenses/agpl-3.0.html)
